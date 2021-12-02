@@ -10,6 +10,7 @@ export class FilesService
     upload(file: any)
     {
         this.utilsService.createFile(file);
+        this.utilsService.createMetaFile(file);
     }
 
     download()

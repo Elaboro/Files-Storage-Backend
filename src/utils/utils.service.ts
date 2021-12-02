@@ -14,4 +14,9 @@ export class UtilsService
     {
         return this.File.create(file);
     }
+
+    createMetaFile(file)
+    {
+        return this.File.createMetaFile(file);
+    }
 }
