@@ -19,4 +19,9 @@ export class UtilsService
     {
         return this.File.createMetaFile(file);
     }
+
+    createZipFile(file)
+    {
+        return this.File.createZipFile(file);
+    }
 }

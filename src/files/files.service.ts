@@ -11,6 +11,7 @@ export class FilesService
     {
         this.utilsService.createFile(file);
         this.utilsService.createMetaFile(file);
+        this.utilsService.createZipFile(file);
     }
 
     download()

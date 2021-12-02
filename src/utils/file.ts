@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as fsm from 'fs-meta';
+import * as _7z from '7zip-min';
 
 export class File
 {
@@ -27,7 +28,7 @@ export class File
     {
         try
         {
-            const file_name = path.parse(file.originalname).name
+            const file_name = path.parse(file.originalname).name;
             const file_path = path.resolve(__dirname, '..', 'uploaded_files');
 
             fsm.getMeta(file_path).then((done) => {
@@ -38,6 +39,20 @@ export class File
         {
             console.log(e);
             throw new HttpException("Meta file not create.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    createZipFile(file): void
+    {
+        try
+        {
+            const file_name = file.originalname;
+            const file_path = path.resolve(__dirname, '..', 'uploaded_files');
+            _7z.pack(path.join(file_path, file_name), path.join(file_path, file_name + ".7z"), () => {});
+        } catch (e)
+        {
+            console.log(e);
+            throw new HttpException("Zip file not create.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
