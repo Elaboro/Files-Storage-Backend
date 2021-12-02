@@ -1,5 +1,6 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FilesService } from './files.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('files')
 export class FilesController
@@ -7,9 +8,10 @@ export class FilesController
     constructor(private filesService: FilesService) {}
 
     @Post()
-    upload(@Body() body: {stub: string})
+    @UseInterceptors(FileInterceptor('file'))
+    upload(@UploadedFile() file)
     {
-        return this.filesService.upload();
+        return this.filesService.upload(file);
     }
 
     @Get()
