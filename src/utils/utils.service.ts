@@ -24,4 +24,9 @@ export class UtilsService
     {
         return this.File.createZipFile(file);
     }
+
+    encryptFile(file)
+    {
+        return this.File.encryptFile(file);
+    }
 }

@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as fsm from 'fs-meta';
 import * as _7z from '7zip-min';
+import * as crypto from 'crypto';
 
 export class File
 {
@@ -53,6 +54,29 @@ export class File
         {
             console.log(e);
             throw new HttpException("Zip file not create.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    encryptFile(file): void
+    {
+        try
+        {
+            const file_name = file.originalname;
+            const file_path = path.resolve(__dirname, '..', 'uploaded_files');
+
+            const algorithm = 'aes-256-ctr';
+            const secret_key = '';
+            const bytes = crypto.randomBytes(16);
+
+            const read_stream = fs.createReadStream(path.join(file_path, file_name));
+            const encrypt = crypto.createCipheriv(algorithm, secret_key, bytes);
+            const write_stream = fs.createWriteStream(path.join(file_path, file_name + ".crypt"));
+
+            read_stream.pipe(encrypt).pipe(write_stream);
+        } catch (e)
+        {
+            console.log(e);
+            throw new HttpException("Encrypted file has not been created.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
