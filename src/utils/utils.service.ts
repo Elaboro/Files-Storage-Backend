@@ -25,8 +25,8 @@ export class UtilsService
         return this.File.createZipFile(file);
     }
 
-    encryptFile(file)
+    encryptFile(key, file)
     {
-        return this.File.encryptFile(file);
+        return this.File.encryptFile(key, file);
     }
 }

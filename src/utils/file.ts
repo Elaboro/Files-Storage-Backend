@@ -57,7 +57,7 @@ export class File
         }
     }
 
-    encryptFile(file): void
+    encryptFile(key, file): void
     {
         try
         {
@@ -65,7 +65,7 @@ export class File
             const file_path = path.resolve(__dirname, '..', 'uploaded_files');
 
             const algorithm = 'aes-256-ctr';
-            const secret_key = '';
+            const secret_key = key;
             const bytes = crypto.randomBytes(16);
 
             const read_stream = fs.createReadStream(path.join(file_path, file_name));

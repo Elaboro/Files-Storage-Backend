@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Get, UploadedFiles, UseInterceptors} from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { UploadFilesDto } from './dto/upload-files.dto';
 
 @Controller('storage')
 export class StorageController
@@ -9,9 +10,10 @@ export class StorageController
 
     @Post()
     @UseInterceptors(AnyFilesInterceptor())
-    upload(@UploadedFiles() files: Array<Express.Multer.File>)
+    async upload(@Body() dto: UploadFilesDto,
+        @UploadedFiles() files: Array<Express.Multer.File>)
     {
-        return this.storageService.save(files);
+        return await this.storageService.save(dto, files);
     }
 
     @Get()
