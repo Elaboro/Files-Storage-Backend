@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
-export class FilesService
+export class StorageService
 {
     constructor(private utilsService: UtilsService)
     {}

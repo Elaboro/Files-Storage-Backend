@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { FilesModule } from './files/files.module';
-import { UtilsModule } from './utils/utils.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
-  imports: [FilesModule, UtilsModule]
+  imports: [StorageModule]
 })
 export class AppModule
 {}
