@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Get, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, Get, UploadedFiles, UseInterceptors} from '@nestjs/common';
 import { StorageService } from './storage.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('storage')
 export class StorageController
@@ -8,16 +8,16 @@ export class StorageController
     constructor(private storageService: StorageService) {}
 
     @Post()
-    @UseInterceptors(FileInterceptor('file'))
-    upload(@UploadedFile() file)
+    @UseInterceptors(AnyFilesInterceptor())
+    upload(@UploadedFiles() files: Array<Express.Multer.File>)
     {
-        return this.storageService.upload(file);
+        return this.storageService.save(files);
     }
 
     @Get()
     download(@Body() body: {stub: string})
     {
-        return this.storageService.download();
+        return this.storageService.choose();
     }
 
     @Post()

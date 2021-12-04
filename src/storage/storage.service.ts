@@ -1,23 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { UtilsService } from 'src/utils/utils.service';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable()
 export class StorageService
 {
-    constructor(private utilsService: UtilsService)
-    {}
+    constructor(private utilsService: UtilsService) {}
 
-    upload(file: any)
+    async save(files: Array<Express.Multer.File>): Promise<any>
     {
-        this.utilsService.createFile(file);
-        this.utilsService.createMetaFile(file);
-        this.utilsService.createZipFile(file);
-        this.utilsService.encryptFile(file);
+        files.forEach(file => {
+            this.utilsService.createFile(file);
+            this.utilsService.createMetaFile(file);
+            this.utilsService.createZipFile(file);
+            this.utilsService.encryptFile(file);
+        });
     }
 
-    download()
+    async choose()
     {}
 
-    delete()
+    async delete()
     {}
 }
