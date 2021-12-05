@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import * as fsm from 'fs-meta';
 import * as _7z from '7zip-min';
 import * as crypto from 'crypto';
+import { Cipher } from 'crypto';
+import { IEncrypt } from './IEncrypt';
+import { Readable } from 'stream';
+import * as zlib from 'zlib';  
+import { Gzip } from 'zlib';
 
 @Injectable()
 export class UtilsService
@@ -40,40 +44,29 @@ export class UtilsService
         return meta;
     }
 
-    createZipFile(file): void
+    createReadableStreamByBuffer(buffer: Buffer): Readable
     {
-        try
-        {
-            const file_name = file.originalname;
-            const file_path = path.resolve(__dirname, '..', 'uploaded_files');
-            _7z.pack(path.join(file_path, file_name), path.join(file_path, file_name + ".7z"), () => {});
-        } catch (e)
-        {
-            console.log(e);
-            throw new HttpException("Zip file not create.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new Readable({
+            read() {
+                this.push(buffer);
+                this.push(null);
+            }
+        });
     }
 
-    encryptFile(key, file): void
+    getEncrypt(key: string): IEncrypt
     {
-        try
-        {
-            const file_name = file.originalname;
-            const file_path = path.resolve(__dirname, '..', 'uploaded_files');
+        let algorithm: string = 'aes-256-ctr';
+        let iv: Buffer = crypto.randomBytes(16);
+        let cipher: Cipher = crypto.createCipheriv(algorithm, key, iv);
 
-            const algorithm = 'aes-256-ctr';
-            const secret_key = key;
-            const bytes = crypto.randomBytes(16);
+        return { cipher: cipher, iv: iv };
+    }
 
-            const read_stream = fs.createReadStream(path.join(file_path, file_name));
-            const encrypt = crypto.createCipheriv(algorithm, secret_key, bytes);
-            const write_stream = fs.createWriteStream(path.join(file_path, file_name + ".crypt"));
-
-            read_stream.pipe(encrypt).pipe(write_stream);
-        } catch (e)
-        {
-            console.log(e);
-            throw new HttpException("Encrypted file has not been created.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    createPack(): Gzip
+    {
+        return zlib.createGzip({
+            level: zlib.constants.Z_BEST_COMPRESSION
+        }); 
     }
 }
