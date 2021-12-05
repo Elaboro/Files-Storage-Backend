@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UtilsService } from '../utils/utils.service';
 import { UploadFilesDto } from './dto/upload-files.dto';
 import * as path from 'path';
@@ -9,20 +9,21 @@ import { Gzip } from 'zlib';
 import { WriteStream } from 'fs';
 import { IEncrypt } from '../utils/IEncrypt';
 import { Storage } from '../entity/storage.model';
+import { DeleteFileDto } from './dto/delete-file.dto';
 
 @Injectable()
 export class StorageService
 {
+    public UPLOADED_FILES_PATH: string = path.resolve(__dirname, '..', 'uploaded_files');
+
     constructor(private utilsService: UtilsService) {}
 
     async save(dto: UploadFilesDto, files: Array<Express.Multer.File>): Promise<number[]>
     {
-        const file_path: string = path.resolve(__dirname, '..', 'uploaded_files');
-
         let ids: number[] = await Promise.all(files.map(async (file): Promise<number>=> {
             let storage: Storage = new Storage();
             await storage.save();
-            let file_path_absolute: string = path.join(file_path, storage.uuid);
+            let file_path: string = path.join(this.UPLOADED_FILES_PATH, storage.uuid);
 
             /* // pause
             let absolute_path: string = await this.utilsService.createFile(file.originalname, file.buffer, file_path);
@@ -42,7 +43,7 @@ export class StorageService
             storage.file_name = file.originalname;
             await storage.save();
 
-            let write_file: WriteStream = fs.createWriteStream(file_path_absolute);
+            let write_file: WriteStream = fs.createWriteStream(file_path);
             await file_readable.pipe(pack).pipe(cipher).pipe(write_file);
             return storage.id;
         }));
@@ -53,6 +54,21 @@ export class StorageService
     async choose()
     {}
 
-    async delete()
-    {}
+    async delete(dto: DeleteFileDto): Promise<any>
+    {
+        try
+        {
+            let id: number = dto.id;
+            let storage: Storage = await Storage.findOne<Storage>({ id });
+            if(typeof storage === "undefined") return;
+
+            let file_path: string = path.join(this.UPLOADED_FILES_PATH, storage.uuid);
+            fs.unlinkSync(file_path);
+
+            Storage.delete({ id });
+        } catch (e)
+        {
+            throw new HttpException("Error deleting a file.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
