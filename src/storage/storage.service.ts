@@ -8,17 +8,22 @@ import * as fs from 'fs';
 import { Gzip } from 'zlib';  
 import { WriteStream } from 'fs';
 import { IEncrypt } from '../utils/IEncrypt';
+import { Storage } from '../entity/storage.model';
 
 @Injectable()
 export class StorageService
 {
     constructor(private utilsService: UtilsService) {}
 
-    async save(dto: UploadFilesDto, files: Array<Express.Multer.File>): Promise<number>
+    async save(dto: UploadFilesDto, files: Array<Express.Multer.File>): Promise<number[]>
     {
         const file_path: string = path.resolve(__dirname, '..', 'uploaded_files');
 
-        files.forEach(async file => {
+        let ids: number[] = await Promise.all(files.map(async (file): Promise<number>=> {
+            let storage: Storage = new Storage();
+            await storage.save();
+            let file_path_absolute: string = path.join(file_path, storage.uuid);
+
             /* // pause
             let absolute_path: string = await this.utilsService.createFile(file.originalname, file.buffer, file_path);
 
@@ -33,11 +38,16 @@ export class StorageService
             let encrypt: IEncrypt = this.utilsService.getEncrypt(dto.key);
             let cipher: Cipher = encrypt.cipher;
 
-            let write_file: WriteStream = fs.createWriteStream(path.join(file_path, file.originalname + ".crypt"));
+            storage.iv = encrypt.iv;
+            storage.file_name = file.originalname;
+            await storage.save();
 
-            file_readable.pipe(pack).pipe(cipher).pipe(write_file);
-        });
-        return 10;
+            let write_file: WriteStream = fs.createWriteStream(file_path_absolute);
+            await file_readable.pipe(pack).pipe(cipher).pipe(write_file);
+            return storage.id;
+        }));
+
+        return ids;
     }
 
     async choose()
