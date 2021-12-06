@@ -4,11 +4,11 @@ import * as fs from 'fs';
 import * as fsm from 'fs-meta';
 import * as _7z from '7zip-min';
 import * as crypto from 'crypto';
-import { Cipher } from 'crypto';
+import { Cipher, Decipher } from 'crypto';
 import { IEncrypt } from './IEncrypt';
 import { Readable } from 'stream';
 import * as zlib from 'zlib';  
-import { Gzip } from 'zlib';
+import { Gzip, Gunzip } from 'zlib';
 
 @Injectable()
 export class UtilsService
@@ -63,10 +63,22 @@ export class UtilsService
         return { cipher: cipher, iv: iv };
     }
 
+    getDecrypt(key: string, iv: Buffer): Decipher
+    {
+        let algorithm: string = 'aes-256-ctr';
+        let deciper = crypto.createDecipheriv(algorithm, key, iv);
+        return deciper;
+    }
+
     createPack(): Gzip
     {
         return zlib.createGzip({
             level: zlib.constants.Z_BEST_COMPRESSION
         }); 
+    }
+
+    createUnpack(): Gunzip
+    {
+        return zlib.createGunzip();
     }
 }

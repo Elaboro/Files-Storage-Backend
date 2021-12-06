@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Get, UploadedFiles, UseInterceptors, Delete, Param} from '@nestjs/common';
+import { Controller, Post, Body, Get, UploadedFiles, UseInterceptors, Delete, Param, Query } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { UploadFilesDto } from './dto/upload-files.dto';
 import { DeleteFileDto } from './dto/delete-file.dto';
+import { DownloadFileDto } from './dto/download-file.dto';
 
 @Controller('storage')
 export class StorageController
@@ -17,10 +18,10 @@ export class StorageController
         return await this.storageService.save(dto, files);
     }
 
-    @Get()
-    download(@Body() body: {stub: string})
+    @Get("?")
+    download(@Query() dto: DownloadFileDto)
     {
-        return this.storageService.choose();
+        this.storageService.choose(dto);
     }
 
     @Delete(":id")

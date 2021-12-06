@@ -3,13 +3,14 @@ import { UtilsService } from '../utils/utils.service';
 import { UploadFilesDto } from './dto/upload-files.dto';
 import * as path from 'path';
 import { Readable } from 'stream';
-import { Cipher } from 'crypto';
+import { Cipher, Decipher } from 'crypto';
 import * as fs from 'fs';
-import { Gzip } from 'zlib';  
+import { Gzip, Gunzip } from 'zlib';  
 import { WriteStream } from 'fs';
 import { IEncrypt } from '../utils/IEncrypt';
 import { Storage } from '../entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
+import { DownloadFileDto } from './dto/download-file.dto';
 
 @Injectable()
 export class StorageService
@@ -51,8 +52,29 @@ export class StorageService
         return ids;
     }
 
-    async choose()
-    {}
+    async choose(dto: DownloadFileDto)
+    {
+        try
+        {
+            let id: number = dto.id;
+            let key: string = dto.key;
+
+            let storage: Storage = await Storage.findOne<Storage>({ id });
+            if(typeof storage === "undefined") return;
+
+            let file_path: string = path.join(this.UPLOADED_FILES_PATH, storage.uuid);
+            let file_readable: Readable = fs.createReadStream(file_path);
+            let decrypt: Decipher = this.utilsService.getDecrypt(key, storage.iv);
+            let unpack: Gunzip = this.utilsService.createUnpack();
+
+            //for test
+            //let write_file: WriteStream = fs.createWriteStream(path.join(this.UPLOADED_FILES_PATH, storage.file_name));
+            //file_readable.pipe(decrypt).pipe(unpack).pipe(write_file);
+        } catch (e)
+        {
+            throw new HttpException("File has been not downloaded.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     async delete(dto: DeleteFileDto): Promise<any>
     {
