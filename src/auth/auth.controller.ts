@@ -15,7 +15,7 @@ export class AuthController
     }
 
     @Post("login")
-    login(@Body() dto: CreateUserDto): Promise<void>
+    login(@Body() dto: CreateUserDto): Promise<object>
     {
         return this.authService.login(dto);
     }

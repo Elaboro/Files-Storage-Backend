@@ -2,10 +2,14 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from './dto/user.dto';
 import { Users } from '../entity/users.model';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService
 {
+    constructor(private jwtService: JwtService)
+    {}
+
     async register(dto: CreateUserDto): Promise<void>
     {
         try
@@ -22,7 +26,7 @@ export class AuthService
         }
     }
 
-    async login(dto: CreateUserDto): Promise<void>
+    async login(dto: CreateUserDto): Promise<object>
     {
         try
         {
@@ -45,7 +49,15 @@ export class AuthService
                 throw new HttpException("Invalid username or email", HttpStatus.UNAUTHORIZED);
             }
 
-            console.log("User is authorize");
+            let payload = {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            };
+
+            return {
+                token: this.jwtService.sign(payload)
+            };
         } catch (e)
         {
             throw new HttpException("Invalid username or password", HttpStatus.UNAUTHORIZED);
