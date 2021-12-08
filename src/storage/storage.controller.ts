@@ -10,7 +10,7 @@ export class StorageController
 {
     constructor(private storageService: StorageService) {}
 
-    @Post()
+    @Post("upload")
     @UseInterceptors(AnyFilesInterceptor())
     async upload(@Body() dto: UploadFilesDto,
         @UploadedFiles() files: Array<Express.Multer.File>)
@@ -18,13 +18,13 @@ export class StorageController
         return await this.storageService.save(dto, files);
     }
 
-    @Get("?")
-    download(@Query() dto: DownloadFileDto)
+    @Get("download/id/:id/key/:key")
+    download(@Param() dto: DownloadFileDto)
     {
         this.storageService.choose(dto);
     }
 
-    @Delete(":id")
+    @Delete("delete/:id")
     async delete(@Param() dto: DeleteFileDto)
     {
         return await this.storageService.delete(dto);
