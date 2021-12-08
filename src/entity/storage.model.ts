@@ -1,4 +1,13 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Generated } from "typeorm";
+import { 
+    BaseEntity, 
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    Generated,
+    ManyToOne,
+    JoinColumn
+} from "typeorm";
+import { Users } from '../entity/users.model';
 
 @Entity({ name: "Storage" })
 export class Storage extends BaseEntity
@@ -15,4 +24,8 @@ export class Storage extends BaseEntity
 
     @Column({type: "text", nullable: true})
     file_name: string;
+
+    @ManyToOne(()=> Users, user => user.files)
+    @JoinColumn({ name: "user_id" })
+    user: Users;
 }

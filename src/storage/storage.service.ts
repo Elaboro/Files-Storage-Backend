@@ -1,4 +1,8 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { 
+    Injectable,
+    HttpException,
+    HttpStatus
+} from '@nestjs/common';
 import { UtilsService } from '../utils/utils.service';
 import { UploadFilesDto } from './dto/upload-files.dto';
 import * as path from 'path';
@@ -11,6 +15,7 @@ import { IEncrypt } from '../utils/IEncrypt';
 import { Storage } from '../entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
+import { Users } from '../entity/users.model';
 
 @Injectable()
 export class StorageService
@@ -19,7 +24,7 @@ export class StorageService
 
     constructor(private utilsService: UtilsService) {}
 
-    async save(dto: UploadFilesDto, files: Array<Express.Multer.File>): Promise<number[]>
+    async save(dto: UploadFilesDto, files: Array<Express.Multer.File>, user: Users): Promise<number[]>
     {
         let ids: number[] = await Promise.all(files.map(async (file): Promise<number>=> {
             let storage: Storage = new Storage();
@@ -42,6 +47,7 @@ export class StorageService
 
             storage.iv = encrypt.iv;
             storage.file_name = file.originalname;
+            storage.user = user;
             await storage.save();
 
             let write_file: WriteStream = fs.createWriteStream(file_path);
@@ -91,6 +97,26 @@ export class StorageService
         } catch (e)
         {
             throw new HttpException("Error deleting a file.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async getInformation()
+    {
+        try
+        {
+            let storage_info: any = await Storage.createQueryBuilder("storages")
+                .leftJoinAndSelect("storages.users", "users")
+                .select([
+                    "storages.id AS id",
+                    "storages.file_name AS file_name",
+                    "users.username AS username"
+                ])
+                .orderBy("users.id", "ASC")
+                .getRawMany();
+            return storage_info;
+        } catch (e)
+        {
+            throw new HttpException("Error searching  storage users.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

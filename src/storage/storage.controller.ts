@@ -7,14 +7,17 @@ import {
     UseInterceptors, 
     Delete, 
     Param, 
-    UseGuards 
+    UseGuards,
+    Headers,
+    Request
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { UploadFilesDto } from './dto/upload-files.dto';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Users } from '../entity/users.model';
 
 @Controller('storage')
 export class StorageController
@@ -24,10 +27,13 @@ export class StorageController
     @UseGuards(JwtAuthGuard)
     @Post("upload")
     @UseInterceptors(AnyFilesInterceptor())
-    async upload(@Body() dto: UploadFilesDto,
-        @UploadedFiles() files: Array<Express.Multer.File>)
-    {
-        return await this.storageService.save(dto, files);
+    async upload(
+        @Body() dto: UploadFilesDto,
+        @UploadedFiles() files: Array<Express.Multer.File>, 
+        @Request() request
+    ) {
+        let user: Users = request.user;
+        return await this.storageService.save(dto, files, user);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -42,5 +48,11 @@ export class StorageController
     async delete(@Param() dto: DeleteFileDto)
     {
         return await this.storageService.delete(dto);
+    }
+
+    @Get()
+    storageInformation()
+    {
+        return this.storageService.getInformation();
     }
 }

@@ -1,5 +1,12 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { 
+    BaseEntity,
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    OneToMany
+} from "typeorm";
 import { IsEmail, Length } from 'class-validator';
+import { Storage } from '../entity/storage.model';
 
 @Entity({ name: "Users" })
 export class Users extends BaseEntity
@@ -17,4 +24,7 @@ export class Users extends BaseEntity
     @Column({type: "text", unique: true})
     @IsEmail()
     email: string;
+
+    @OneToMany(() => Storage, storage => storage.user)
+    files: Storage[];
 }
