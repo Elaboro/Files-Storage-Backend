@@ -10,16 +10,18 @@ export class AuthService
     constructor(private jwtService: JwtService)
     {}
 
-    async register(dto: CreateUserDto): Promise<void>
+    async register(dto: CreateUserDto): Promise<object>
     {
         try
         {
-            let hash_password:string = bcrypt.hashSync(dto.password, 10);
+            let hash_password: string = bcrypt.hashSync(dto.password, 10);
             let user: Users = new Users();
             user.username = dto.username;
             user.password = hash_password;
             user.email = dto.email;
             await user.save();
+
+            return this.generateToken(user);
         } catch (e)
         {
             throw new HttpException("User is not created", HttpStatus.BAD_REQUEST);
@@ -34,7 +36,7 @@ export class AuthService
             let email: string = dto.email;
             let password: string = dto.password;
 
-            let user = await Users.findOne({where: [
+            let user: Users = await Users.findOne({where: [
                 {username: username},
                 {email: email}
             ]});
@@ -43,24 +45,29 @@ export class AuthService
                 throw new HttpException("Invalid username or email", HttpStatus.UNAUTHORIZED);
             }
 
-            let is_password_equals = bcrypt.compareSync(password, user.password);
+            let is_password_equals: boolean = bcrypt.compareSync(password, user.password);
             if(!is_password_equals)
             {
                 throw new HttpException("Invalid username or email", HttpStatus.UNAUTHORIZED);
             }
 
-            let payload = {
-                id: user.id,
-                username: user.username,
-                email: user.email
-            };
-
-            return {
-                token: this.jwtService.sign(payload)
-            };
+            return this.generateToken(user);
         } catch (e)
         {
             throw new HttpException("Invalid username or password", HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    generateToken(user: Users): object
+    {
+        let payload: object = {
+            id: user.id,
+            username: user.username,
+            email: user.email
+        };
+
+        return {
+            token: this.jwtService.sign(payload)
+        };
     }
 }
