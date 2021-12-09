@@ -1,6 +1,6 @@
 interface IStorage
 {
-    save(): void;
-    extract(file_name: string): IExtractFile | Promise<IExtractFile>;
-    delete(): void;
+    save(file_name: string, data): void;
+    extract(file_name: string): any | Promise<any>;
+    delete(file_name: string): void;
 }

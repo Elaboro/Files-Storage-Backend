@@ -5,23 +5,20 @@ import {
 } from '@nestjs/common';
 import { UtilsService } from '../utils/utils.service';
 import { UploadFilesDto } from './dto/upload-files.dto';
-import * as path from 'path';
 import { Readable } from 'stream';
 import { Cipher, Decipher } from 'crypto';
-import * as fs from 'fs';
 import { Gzip, Gunzip } from 'zlib';  
-import { WriteStream } from 'fs';
 import { IEncrypt } from '../utils/IEncrypt';
 import { Storage } from '../entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { Users } from '../entity/users.model';
+import { ExtractFile } from './storage.type/ExtractFile';
+import { StorageLocal } from './storage.type/StorageLocal';
 
 @Injectable()
 export class StorageService
 {
-    public UPLOADED_FILES_PATH: string = path.resolve(__dirname, '..', 'uploaded_files');
-
     constructor(private utilsService: UtilsService) {}
 
     async save(dto: UploadFilesDto, files: Array<Express.Multer.File>, user: Users): Promise<number[]>
@@ -29,7 +26,6 @@ export class StorageService
         let ids: number[] = await Promise.all(files.map(async (file): Promise<number>=> {
             let storage: Storage = new Storage();
             await storage.save();
-            let file_path: string = path.join(this.UPLOADED_FILES_PATH, storage.uuid);
 
             /* // pause
             let absolute_path: string = await this.utilsService.createFile(file.originalname, file.buffer, file_path);
@@ -44,14 +40,14 @@ export class StorageService
             let pack: Gzip = this.utilsService.createPack();
             let encrypt: IEncrypt = this.utilsService.getEncrypt(dto.key);
             let cipher: Cipher = encrypt.cipher;
+            let stream = file_readable.pipe(pack).pipe(cipher)
+            let storage_manager: IStorage = new StorageLocal();
+            storage_manager.save(storage.uuid, stream);
 
             storage.iv = encrypt.iv;
             storage.file_name = file.originalname;
             storage.user = user;
             await storage.save();
-
-            let write_file: WriteStream = fs.createWriteStream(file_path);
-            await file_readable.pipe(pack).pipe(cipher).pipe(write_file);
             return storage.id;
         }));
 
@@ -68,14 +64,16 @@ export class StorageService
             let storage: Storage = await Storage.findOne<Storage>({ id });
             if(typeof storage === "undefined") return;
 
-            let file_path: string = path.join(this.UPLOADED_FILES_PATH, storage.uuid);
-            let file_readable: Readable = fs.createReadStream(file_path);
+            let storage_manager: IStorage = new StorageLocal();
+            let stream = storage_manager.extract(storage.uuid);
             let decrypt: Decipher = this.utilsService.getDecrypt(key, storage.iv);
             let unpack: Gunzip = this.utilsService.createUnpack();
 
-            //for test
-            //let write_file: WriteStream = fs.createWriteStream(path.join(this.UPLOADED_FILES_PATH, storage.file_name));
-            //file_readable.pipe(decrypt).pipe(unpack).pipe(write_file);
+            let extract_file = new ExtractFile();
+            extract_file.originalname = storage.file_name;
+            extract_file.originalfile = stream.pipe(decrypt).pipe(unpack);
+
+            return extract_file;
         } catch (e)
         {
             throw new HttpException("File has been not downloaded.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,8 +88,8 @@ export class StorageService
             let storage: Storage = await Storage.findOne<Storage>({ id });
             if(typeof storage === "undefined") return;
 
-            let file_path: string = path.join(this.UPLOADED_FILES_PATH, storage.uuid);
-            fs.unlinkSync(file_path);
+            let storage_manager: IStorage = new StorageLocal();
+            storage_manager.delete(storage.uuid);
 
             Storage.delete({ id });
         } catch (e)
