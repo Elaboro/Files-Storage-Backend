@@ -8,7 +8,6 @@ import {
     Delete, 
     Param, 
     UseGuards,
-    Headers,
     Request
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
@@ -18,6 +17,9 @@ import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Users } from '../entity/users.model';
+import { Response } from '@nestjs/common';
+import { Response as Res } from 'express';
+import { ExtractFile } from '../storage/storage.type/ExtractFile';
 
 @Controller('storage')
 export class StorageController
@@ -38,9 +40,18 @@ export class StorageController
 
     @UseGuards(JwtAuthGuard)
     @Get("download/id/:id/key/:key")
-    download(@Param() dto: DownloadFileDto)
-    {
-        this.storageService.choose(dto);
+    async download(
+        @Param() dto: DownloadFileDto, 
+        @Response() res: Res
+    ) {
+        let file: ExtractFile = await this.storageService.choose(dto);
+
+        res.set({
+            "Content-Type": "application/force-download",
+            "Content-Disposition": `attachment; filename="${file.originalname}"`
+        });
+
+        file.originalfile.pipe(res);
     }
 
     @UseGuards(JwtAuthGuard)
