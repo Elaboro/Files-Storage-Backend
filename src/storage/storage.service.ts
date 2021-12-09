@@ -15,10 +15,17 @@ import { DownloadFileDto } from './dto/download-file.dto';
 import { Users } from '../entity/users.model';
 import { ExtractFile } from './storage.type/ExtractFile';
 import { StorageLocal } from './storage.type/StorageLocal';
+import { StorageCDN } from './storage.type/StorageCDN';
 
 @Injectable()
 export class StorageService
 {
+    //*
+    private storage_manager: IStorage = new StorageCDN(process.env.CDN_URL);
+    /*/
+    private storage_manager: IStorage = new StorageLocal();
+    //*/
+
     constructor(private utilsService: UtilsService) {}
 
     async save(dto: UploadFilesDto, files: Array<Express.Multer.File>, user: Users): Promise<number[]>
@@ -41,8 +48,7 @@ export class StorageService
             let encrypt: IEncrypt = this.utilsService.getEncrypt(dto.key);
             let cipher: Cipher = encrypt.cipher;
             let stream = file_readable.pipe(pack).pipe(cipher)
-            let storage_manager: IStorage = new StorageLocal();
-            storage_manager.save(storage.uuid, stream);
+            this.storage_manager.save(storage.uuid, stream);
 
             storage.iv = encrypt.iv;
             storage.file_name = file.originalname;
@@ -64,14 +70,12 @@ export class StorageService
             let storage: Storage = await Storage.findOne<Storage>({ id });
             if(typeof storage === "undefined") return;
 
-            let storage_manager: IStorage = new StorageLocal();
-            let stream = storage_manager.extract(storage.uuid);
+            let extract_file: ExtractFile = await this.storage_manager.extract(storage.uuid);
             let decrypt: Decipher = this.utilsService.getDecrypt(key, storage.iv);
             let unpack: Gunzip = this.utilsService.createUnpack();
 
-            let extract_file = new ExtractFile();
             extract_file.originalname = storage.file_name;
-            extract_file.originalfile = stream.pipe(decrypt).pipe(unpack);
+            extract_file.originalfile = extract_file.originalfile.pipe(decrypt).pipe(unpack);
 
             return extract_file;
         } catch (e)
@@ -88,8 +92,7 @@ export class StorageService
             let storage: Storage = await Storage.findOne<Storage>({ id });
             if(typeof storage === "undefined") return;
 
-            let storage_manager: IStorage = new StorageLocal();
-            storage_manager.delete(storage.uuid);
+            this.storage_manager.delete(storage.uuid);
 
             Storage.delete({ id });
         } catch (e)
