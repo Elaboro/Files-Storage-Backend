@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import { ExtractFile } from './ExtractFile';
 import * as Client from 'ftp';
 
 export class StorageCDN implements IStorage
@@ -20,27 +19,25 @@ export class StorageCDN implements IStorage
         this.url_domain = url_domain;
     }
 
-    async extract(file_name: string): Promise<ExtractFile>
+    async extract(file_name: string): Promise<any>
     {
-        let extract_file: ExtractFile = new ExtractFile();
-
         let url: URL = new URL(file_name, this.url_domain);
 
-        await fetch(url.href)
+        let body = await fetch(url.href)
             .then((res => {
                 if (res.status >= 400) {
                     throw new Error("Bad response from server");
                 }
-                extract_file.originalfile = res.body;
-            }).bind(extract_file))
+                return res.body;
+            }))
             .catch(e => {
                 console.log(e);
             });
 
-        return extract_file;
+        return body;
     }
 
-    save(file_name: string, data)
+    async save(file_name: string, data)
     {
         try{
             let remote_path = this.remote_path_root + file_name;
@@ -52,13 +49,14 @@ export class StorageCDN implements IStorage
                 });
             });
             remote_storage.connect(this.ftp_config);
+            return true;
         } catch (e)
         {
             console.error(e);
         }
     }
 
-    delete(file_name: string)
+    async delete(file_name: string)
     {
         let remote_path = this.remote_path_root + file_name;
 

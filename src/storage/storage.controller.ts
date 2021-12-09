@@ -19,7 +19,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Users } from '../entity/users.model';
 import { Response } from '@nestjs/common';
 import { Response as Res } from 'express';
-import { ExtractFile } from '../storage/storage.type/ExtractFile';
 
 @Controller('storage')
 export class StorageController
@@ -44,14 +43,14 @@ export class StorageController
         @Param() dto: DownloadFileDto, 
         @Response() res: Res
     ) {
-        let file: ExtractFile = await this.storageService.choose(dto);
+        let file = await this.storageService.choose(dto);
 
         res.set({
             "Content-Type": "application/force-download",
-            "Content-Disposition": `attachment; filename="${file.originalname}"`
+            "Content-Disposition": `attachment; filename="${encodeURIComponent(file.name)}"`
         });
 
-        file.originalfile.pipe(res);
+        file.data.pipe(res);
     }
 
     @UseGuards(JwtAuthGuard)

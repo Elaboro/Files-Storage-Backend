@@ -12,7 +12,7 @@ export class StorageLocal implements IStorage
         return file_readable;
     }
 
-    save(file_name: string, data)
+    async save(file_name: string, data)
     {
         try
         {
@@ -24,13 +24,14 @@ export class StorageLocal implements IStorage
             }
             let writable = fs.createWriteStream(file_path);
             data.pipe(writable);
+            return true;
         } catch (e)
         {
             throw new Error("File not created.");
         }
     }
 
-    delete(file_name: string)
+    async delete(file_name: string)
     {
         let file_path: string = path.join(this.UPLOADED_FILES_PATH, file_name);
         fs.unlinkSync(file_path);

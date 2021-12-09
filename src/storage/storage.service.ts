@@ -13,20 +13,19 @@ import { Storage } from '../entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { Users } from '../entity/users.model';
-import { ExtractFile } from './storage.type/ExtractFile';
+import { File } from './storage.type/File';
 import { StorageLocal } from './storage.type/StorageLocal';
 import { StorageCDN } from './storage.type/StorageCDN';
 
 @Injectable()
 export class StorageService
 {
-    //*
-    private storage_manager: IStorage = new StorageCDN(process.env.CDN_URL);
-    /*/
-    private storage_manager: IStorage = new StorageLocal();
-    //*/
+    private storage_manager: IStorage;
 
-    constructor(private utilsService: UtilsService) {}
+    constructor(private utilsService: UtilsService)
+    {
+        this.storage_manager = process.env.STORAGE_LOCAL === "true" ? new StorageLocal() : new StorageCDN(process.env.CDN_URL);
+    }
 
     async save(dto: UploadFilesDto, files: Array<Express.Multer.File>, user: Users): Promise<number[]>
     {
@@ -70,14 +69,16 @@ export class StorageService
             let storage: Storage = await Storage.findOne<Storage>({ id });
             if(typeof storage === "undefined") return;
 
-            let extract_file: ExtractFile = await this.storage_manager.extract(storage.uuid);
+            let stream = await this.storage_manager.extract(storage.uuid);
             let decrypt: Decipher = this.utilsService.getDecrypt(key, storage.iv);
             let unpack: Gunzip = this.utilsService.createUnpack();
 
-            extract_file.originalname = storage.file_name;
-            extract_file.originalfile = extract_file.originalfile.pipe(decrypt).pipe(unpack);
+            let file = new File(
+                storage.file_name,
+                stream.pipe(decrypt).pipe(unpack)
+            );
 
-            return extract_file;
+            return file;
         } catch (e)
         {
             throw new HttpException("File has been not downloaded.", HttpStatus.INTERNAL_SERVER_ERROR);
