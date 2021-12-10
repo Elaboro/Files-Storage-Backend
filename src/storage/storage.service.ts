@@ -33,14 +33,17 @@ export class StorageService
             let storage: Storage = new Storage();
             await storage.save();
 
-            /* // pause
-            let absolute_path: string = await this.utilsService.createFile(file.originalname, file.buffer, file_path);
+            let file_info = {...file, buffer: null};
+            delete file_info.buffer;
+            delete file_info.fieldname;
 
-            let meta: any = await this.utilsService.getMetaArrayByFilePath(absolute_path);
-            const meta_name: string = meta.basename + ".meta.json";
-            let meta_json: string = JSON.stringify(meta);
-            this.utilsService.createFile(meta_name, meta_json, file_path);
-            */
+            let file_info_json = JSON.stringify(file_info);
+
+            let meta_stream = new Readable();
+            meta_stream._read = () => {};
+            meta_stream.push(file_info_json);
+            meta_stream.push(null);
+            this.storage_manager.save(storage.uuid + ".meta.json", meta_stream);      
 
             let file_readable: Readable = this.utilsService.createReadableStreamByBuffer(file.buffer);
             let pack: Gzip = this.utilsService.createPack();
@@ -94,6 +97,7 @@ export class StorageService
             if(typeof storage === "undefined") return;
 
             this.storage_manager.delete(storage.uuid);
+            this.storage_manager.delete(storage.uuid + ".meta.json");
 
             Storage.delete({ id });
         } catch (e)
