@@ -49,7 +49,7 @@ export class UtilsService {
   }
 
   getEncrypt(key: string): IEncrypt {
-    const algorithm: string = 'aes-256-ctr';
+    const algorithm = 'aes-256-ctr';
     const iv: Buffer = crypto.randomBytes(16);
     const cipher: Cipher = crypto.createCipheriv(algorithm, key, iv);
 
@@ -57,7 +57,7 @@ export class UtilsService {
   }
 
   getDecrypt(key: string, iv: Buffer): Decipher {
-    const algorithm: string = 'aes-256-ctr';
+    const algorithm = 'aes-256-ctr';
     const deciper: Decipher = crypto.createDecipheriv(algorithm, key, iv);
     return deciper;
   }

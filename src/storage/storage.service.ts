@@ -11,18 +11,22 @@ import { DownloadFileDto } from './dto/download-file.dto';
 import { Users } from '../entity/users.model';
 import { File } from './storage.type/File';
 import { StorageLocal } from './storage.type/StorageLocal';
-import { StorageCDN } from './storage.type/StorageCDN';
+import { StorageRemote } from './storage.type/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
+import { RemoteServerService } from 'src/remote-server/remote-server.service';
 
 @Injectable()
 export class StorageService {
   private storage_manager: IStorage;
 
-  constructor(private utilsService: UtilsService) {
+  constructor(
+    private utilsService: UtilsService,
+    private remoteServerService: RemoteServerService,
+  ) {
     this.storage_manager =
       process.env.STORAGE_LOCAL === 'true'
         ? new StorageLocal()
-        : new StorageCDN(process.env.CDN_URL);
+        : new StorageRemote(this.remoteServerService, process.env.CDN_URL);
   }
 
   async save(
