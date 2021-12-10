@@ -7,9 +7,6 @@ import { AuthModule } from '../auth/auth.module';
 @Module({
   providers: [StorageService],
   controllers: [StorageController],
-  imports: [
-    UtilsModule,
-    AuthModule
-  ]
+  imports: [UtilsModule, AuthModule],
 })
 export class StorageModule {}

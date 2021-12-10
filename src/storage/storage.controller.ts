@@ -1,14 +1,14 @@
-import { 
-    Controller, 
-    Post, 
-    Body, 
-    Get, 
-    UploadedFiles, 
-    UseInterceptors, 
-    Delete, 
-    Param, 
-    UseGuards,
-    Request
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UploadedFiles,
+  UseInterceptors,
+  Delete,
+  Param,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
@@ -21,48 +21,44 @@ import { Response } from '@nestjs/common';
 import { Response as Res } from 'express';
 
 @Controller('storage')
-export class StorageController
-{
-    constructor(private storageService: StorageService) {}
+export class StorageController {
+  constructor(private storageService: StorageService) {}
 
-    @UseGuards(JwtAuthGuard)
-    @Post("upload")
-    @UseInterceptors(AnyFilesInterceptor())
-    async upload(
-        @Body() dto: UploadFilesDto,
-        @UploadedFiles() files: Array<Express.Multer.File>, 
-        @Request() request
-    ) {
-        let user: Users = request.user;
-        return await this.storageService.save(dto, files, user);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  @UseInterceptors(AnyFilesInterceptor())
+  async upload(
+    @Body() dto: UploadFilesDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Request() request,
+  ) {
+    const user: Users = request.user;
+    return await this.storageService.save(dto, files, user);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Get("download/id/:id/key/:key")
-    async download(
-        @Param() dto: DownloadFileDto, 
-        @Response() res: Res
-    ) {
-        let file = await this.storageService.choose(dto);
+  @UseGuards(JwtAuthGuard)
+  @Get('download/id/:id/key/:key')
+  async download(@Param() dto: DownloadFileDto, @Response() res: Res) {
+    const file = await this.storageService.choose(dto);
 
-        res.set({
-            "Content-Type": "application/force-download",
-            "Content-Disposition": `attachment; filename="${encodeURIComponent(file.name)}"`
-        });
+    res.set({
+      'Content-Type': 'application/force-download',
+      'Content-Disposition': `attachment; filename="${encodeURIComponent(
+        file.name,
+      )}"`,
+    });
 
-        file.data.pipe(res);
-    }
+    file.data.pipe(res);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Delete("delete/:id")
-    async delete(@Param() dto: DeleteFileDto)
-    {
-        return await this.storageService.delete(dto);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Delete('delete/:id')
+  async delete(@Param() dto: DeleteFileDto) {
+    return await this.storageService.delete(dto);
+  }
 
-    @Get()
-    storageInformation()
-    {
-        return this.storageService.getInformation();
-    }
+  @Get()
+  storageInformation() {
+    return this.storageService.getInformation();
+  }
 }

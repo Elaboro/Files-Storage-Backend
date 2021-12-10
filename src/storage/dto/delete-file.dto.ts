@@ -1,4 +1,3 @@
-export class DeleteFileDto
-{
-    readonly id: number;
+export class DeleteFileDto {
+  readonly id: number;
 }

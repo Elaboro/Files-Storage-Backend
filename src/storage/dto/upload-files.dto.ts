@@ -1,4 +1,3 @@
-export class UploadFilesDto
-{
-    readonly key: string;
+export class UploadFilesDto {
+  readonly key: string;
 }

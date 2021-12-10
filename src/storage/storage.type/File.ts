@@ -1,14 +1,12 @@
-import { IStorageFile } from "../interfaces/IStorageFile";
-import { Stream } from "stream";
+import { IStorageFile } from '../interfaces/IStorageFile';
+import { Stream } from 'stream';
 
-export class File implements IStorageFile
-{
-    public name: string;
-    public data: Stream;
+export class File implements IStorageFile {
+  public name: string;
+  public data: Stream;
 
-    constructor(name, data)
-    {
-        this.name = name;
-        this.data = data;
-    }
+  constructor(name, data) {
+    this.name = name;
+    this.data = data;
+  }
 }

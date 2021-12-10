@@ -9,7 +9,7 @@ import { Users } from './entity/users.model';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`
+      envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -18,15 +18,11 @@ import { Users } from './entity/users.model';
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [
-        Storage,
-        Users
-      ],
+      entities: [Storage, Users],
       synchronize: true,
     }),
     StorageModule,
     AuthModule,
-  ]
+  ],
 })
-export class AppModule
-{}
+export class AppModule {}

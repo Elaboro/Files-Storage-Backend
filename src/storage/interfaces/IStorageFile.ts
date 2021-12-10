@@ -1,7 +1,6 @@
-import { Stream } from "stream";
+import { Stream } from 'stream';
 
-export interface IStorageFile
-{
-    name: string;
-    data: Stream;
+export interface IStorageFile {
+  name: string;
+  data: Stream;
 }
