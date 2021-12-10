@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UtilsService } from '../utils/utils.service';
 import { UploadFilesDto } from './dto/upload-files.dto';
-import { Readable } from 'stream';
+import { Readable, Stream } from 'stream';
 import { Cipher, Decipher } from 'crypto';
 import { Gzip, Gunzip } from 'zlib';
 import { IEncrypt } from '../utils/IEncrypt';
@@ -35,13 +35,13 @@ export class StorageService {
         const storage: Storage = new Storage();
         await storage.save();
 
-        const file_info = { ...file, buffer: null };
+        const file_info: any = { ...file, buffer: null };
         delete file_info.buffer;
         delete file_info.fieldname;
 
-        const file_info_json = JSON.stringify(file_info);
+        const file_info_json: string = JSON.stringify(file_info);
 
-        const meta_stream = new Readable();
+        const meta_stream: Readable = new Readable();
         meta_stream._read = () => {
           // do nothing.
         };
@@ -54,7 +54,7 @@ export class StorageService {
         const pack: Gzip = this.utilsService.createPack();
         const encrypt: IEncrypt = this.utilsService.getEncrypt(dto.key);
         const cipher: Cipher = encrypt.cipher;
-        const stream = file_readable.pipe(pack).pipe(cipher);
+        const stream: Stream = file_readable.pipe(pack).pipe(cipher);
         this.storage_manager.save(storage.uuid, stream);
 
         storage.iv = encrypt.iv;
@@ -76,7 +76,7 @@ export class StorageService {
       const storage: Storage = await Storage.findOne<Storage>({ id });
       if (typeof storage === 'undefined') return;
 
-      const stream = await this.storage_manager.extract(storage.uuid);
+      const stream: Stream = await this.storage_manager.extract(storage.uuid);
       const decrypt: Decipher = this.utilsService.getDecrypt(key, storage.iv);
       const unpack: Gunzip = this.utilsService.createUnpack();
 

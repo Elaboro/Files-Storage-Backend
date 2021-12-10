@@ -21,7 +21,7 @@ export class StorageCDN implements IStorage {
   async extract(file_name: string): Promise<any> {
     const url: URL = new URL(file_name, this.url_domain);
 
-    const body = await fetch(url.href)
+    const body: any = await fetch(url.href)
       .then((res) => {
         if (res.status >= 400) {
           throw new Error('Bad response from server');

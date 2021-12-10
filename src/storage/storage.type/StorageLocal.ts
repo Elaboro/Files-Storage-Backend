@@ -11,18 +11,18 @@ export class StorageLocal implements IStorage {
 
   extract(file_name: string): any {
     const file_path: string = path.join(this.UPLOADED_FILES_PATH, file_name);
-    const file_readable = fs.createReadStream(file_path);
+    const file_readable: fs.ReadStream = fs.createReadStream(file_path);
     return file_readable;
   }
 
-  async save(file_name: string, data) {
+  async save(file_name: string, data): Promise<boolean> {
     try {
       const file_path: string = path.join(this.UPLOADED_FILES_PATH, file_name);
 
       if (!fs.existsSync(this.UPLOADED_FILES_PATH)) {
         fs.mkdirSync(this.UPLOADED_FILES_PATH, { recursive: true });
       }
-      const writable = fs.createWriteStream(file_path);
+      const writable: fs.WriteStream = fs.createWriteStream(file_path);
       data.pipe(writable);
       return true;
     } catch (e) {
@@ -30,7 +30,7 @@ export class StorageLocal implements IStorage {
     }
   }
 
-  async delete(file_name: string) {
+  async delete(file_name: string): Promise<void> {
     const file_path: string = path.join(this.UPLOADED_FILES_PATH, file_name);
     fs.unlinkSync(file_path);
   }
