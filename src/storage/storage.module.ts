@@ -4,10 +4,11 @@ import { StorageController } from './storage.controller';
 import { UtilsModule } from '../utils/utils.module';
 import { AuthModule } from '../auth/auth.module';
 import { RemoteServerModule } from '../remote-server/remote-server.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   providers: [StorageService],
   controllers: [StorageController],
-  imports: [UtilsModule, AuthModule, RemoteServerModule],
+  imports: [UtilsModule, AuthModule, RemoteServerModule, FilesModule],
 })
 export class StorageModule {}

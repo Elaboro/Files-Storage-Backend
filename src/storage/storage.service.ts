@@ -14,6 +14,7 @@ import { StorageLocal } from './storage.type/StorageLocal';
 import { StorageRemote } from './storage.type/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
 import { RemoteServerService } from 'src/remote-server/remote-server.service';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class StorageService {
@@ -22,10 +23,11 @@ export class StorageService {
   constructor(
     private utilsService: UtilsService,
     private remoteServerService: RemoteServerService,
+    private filesService: FilesService,
   ) {
     this.storage_manager =
       process.env.STORAGE_LOCAL === 'true'
-        ? new StorageLocal()
+        ? new StorageLocal(this.filesService)
         : new StorageRemote(this.remoteServerService, process.env.CDN_URL);
   }
 

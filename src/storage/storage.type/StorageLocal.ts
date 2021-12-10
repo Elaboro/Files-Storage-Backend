@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as fs from 'fs';
 import { IStorage } from '../interfaces/IStorage';
+import { FilesService } from 'src/files/files.service';
 
 export class StorageLocal implements IStorage {
   private UPLOADED_FILES_PATH: string = path.resolve(
@@ -9,29 +9,21 @@ export class StorageLocal implements IStorage {
     'uploaded_files',
   );
 
+  constructor(private filesService: FilesService) {}
+
   extract(file_name: string): any {
-    const file_path: string = path.join(this.UPLOADED_FILES_PATH, file_name);
-    const file_readable: fs.ReadStream = fs.createReadStream(file_path);
-    return file_readable;
+    return this.filesService.getStreamFile(this.UPLOADED_FILES_PATH, file_name);
   }
 
   async save(file_name: string, data): Promise<boolean> {
-    try {
-      const file_path: string = path.join(this.UPLOADED_FILES_PATH, file_name);
-
-      if (!fs.existsSync(this.UPLOADED_FILES_PATH)) {
-        fs.mkdirSync(this.UPLOADED_FILES_PATH, { recursive: true });
-      }
-      const writable: fs.WriteStream = fs.createWriteStream(file_path);
-      data.pipe(writable);
-      return true;
-    } catch (e) {
-      throw new Error('File not created.');
-    }
+    return this.filesService.saveFile(
+      this.UPLOADED_FILES_PATH,
+      file_name,
+      data,
+    );
   }
 
   async delete(file_name: string): Promise<void> {
-    const file_path: string = path.join(this.UPLOADED_FILES_PATH, file_name);
-    fs.unlinkSync(file_path);
+    return this.filesService.deleteFile(this.UPLOADED_FILES_PATH, file_name);
   }
 }
