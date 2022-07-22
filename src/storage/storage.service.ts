@@ -121,7 +121,7 @@ export class StorageService {
   async getInformation() {
     try {
       const storage_info: any = await Storage.createQueryBuilder('storages')
-        .leftJoinAndSelect('storages.users', 'users')
+        .leftJoinAndSelect('storages.user', 'users')
         .select([
           'storages.id AS id',
           'storages.file_name AS file_name',
