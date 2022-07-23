@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { IStorage } from '../interfaces/IStorage';
-import { RemoteServerService } from 'src/remote-server/remote-server.service';
+import { RemoteServerService } from '../../remote-server/remote-server.service';
 
 export class StorageRemote implements IStorage {
   private url_domain: string;

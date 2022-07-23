@@ -13,8 +13,8 @@ import { File } from './storage.type/File';
 import { StorageLocal } from './storage.type/StorageLocal';
 import { StorageRemote } from './storage.type/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
-import { RemoteServerService } from 'src/remote-server/remote-server.service';
-import { FilesService } from 'src/files/files.service';
+import { RemoteServerService } from '../remote-server/remote-server.service';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class StorageService {

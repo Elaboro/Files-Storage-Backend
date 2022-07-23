@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { StorageModule } from './storage/storage.module';
+import { StorageModule } from './module/storage/storage.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { Storage } from './entity/storage.model';
-import { AuthModule } from './auth/auth.module';
-import { Users } from './entity/users.model';
+import { Storage } from './module/entity/storage.model';
+import { AuthModule } from './module/auth/auth.module';
+import { Users } from './module/entity/users.model';
 
 @Module({
   imports: [
