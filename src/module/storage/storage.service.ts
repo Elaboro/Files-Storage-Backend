@@ -1,10 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { UtilsService } from '../utils/utils.service';
 import { UploadFilesDto } from './dto/upload-files.dto';
 import { Readable, Stream } from 'stream';
 import { Cipher, Decipher } from 'crypto';
 import { Gzip, Gunzip } from 'zlib';
-import { IEncrypt } from '../utils/IEncrypt';
 import { Storage } from '../entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
@@ -16,13 +14,17 @@ import { IStorage } from './interfaces/IStorage';
 import { RemoteServerService } from '../remote-server/remote-server.service';
 import { FilesService } from '../files/files.service';
 import cfg from 'src/config/app.config';
+import { CryptoService } from 'src/lib/crypto/CryptoService';
+import { PackService } from 'src/lib/pack/PackService';
+import { IEncrypt } from 'src/lib/crypto/type/Type';
 
 @Injectable()
 export class StorageService {
   private storage_manager: IStorage;
+  private cryptoService = new CryptoService();
+  private packService = new PackService();
 
   constructor(
-    private utilsService: UtilsService,
     private remoteServerService: RemoteServerService,
     private filesService: FilesService,
   ) {
@@ -57,9 +59,9 @@ export class StorageService {
         this.storage_manager.save(storage.uuid + '.meta.json', meta_stream);
 
         const file_readable: Readable =
-          this.utilsService.createReadableStreamByBuffer(file.buffer);
-        const pack: Gzip = this.utilsService.createPack();
-        const encrypt: IEncrypt = this.utilsService.getEncrypt(dto.key);
+          this.createReadableStreamByBuffer(file.buffer);
+        const pack: Gzip = this.packService.pack();
+        const encrypt: IEncrypt = this.cryptoService.encrypt(dto.key);
         const cipher: Cipher = encrypt.cipher;
         const stream: Stream = file_readable.pipe(pack).pipe(cipher);
         this.storage_manager.save(storage.uuid, stream);
@@ -75,6 +77,15 @@ export class StorageService {
     return ids;
   }
 
+  createReadableStreamByBuffer(buffer: Buffer): Readable {
+    return new Readable({
+      read() {
+        this.push(buffer);
+        this.push(null);
+      },
+    });
+  }
+
   async choose(dto: DownloadFileDto) {
     try {
       const id: number = dto.id;
@@ -84,8 +95,8 @@ export class StorageService {
       if (typeof storage === 'undefined') return;
 
       const stream: Stream = await this.storage_manager.extract(storage.uuid);
-      const decrypt: Decipher = this.utilsService.getDecrypt(key, storage.iv);
-      const unpack: Gunzip = this.utilsService.createUnpack();
+      const decrypt: Decipher = this.cryptoService.decrypt(key, storage.iv);
+      const unpack: Gunzip = this.packService.unpack();
 
       const file = new File(
         storage.file_name,
