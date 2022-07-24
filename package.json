@@ -55,7 +55,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "exif-parser": "^0.1.12",
     "filesize": "^8.0.6",
-    "fs-meta": "^0.2.1",
     "ftp": "^0.3.10",
     "id3js": "^2.1.1",
     "image-size": "^1.0.0",

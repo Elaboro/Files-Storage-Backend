@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as Client from 'ftp';
+import Client from 'ftp';
 import cfg from 'src/config/app.config';
 
 @Injectable()

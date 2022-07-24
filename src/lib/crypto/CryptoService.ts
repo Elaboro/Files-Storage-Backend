@@ -1,5 +1,5 @@
 import { IEncrypt } from "./type/Type";
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import { Cipher, Decipher } from 'crypto';
 import { Injectable } from "@nestjs/common";
 

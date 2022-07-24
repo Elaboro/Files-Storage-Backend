@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import { IStorage } from '../interfaces/IStorage';
 import { FilesService } from '../../files/files.service';
 
