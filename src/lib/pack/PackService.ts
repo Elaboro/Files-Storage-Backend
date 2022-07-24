@@ -1,5 +1,8 @@
-import zlib from 'zlib';
-import { Gzip, Gunzip } from 'zlib';
+import zlib,
+{
+  Gzip,
+  Gunzip,
+} from 'zlib';
 
 export class PackService {
 

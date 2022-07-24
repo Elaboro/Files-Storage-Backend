@@ -1,6 +1,9 @@
 import { IEncrypt } from "./type/Type";
-import crypto from 'crypto';
-import { Cipher, Decipher } from 'crypto';
+import crypto,
+{
+  Cipher,
+  Decipher,
+}  from 'crypto';
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
