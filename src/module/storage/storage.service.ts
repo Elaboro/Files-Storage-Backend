@@ -15,6 +15,7 @@ import { StorageRemote } from './storage.type/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
 import { RemoteServerService } from '../remote-server/remote-server.service';
 import { FilesService } from '../files/files.service';
+import cfg from 'src/config/app.config';
 
 @Injectable()
 export class StorageService {
@@ -26,9 +27,9 @@ export class StorageService {
     private filesService: FilesService,
   ) {
     this.storage_manager =
-      process.env.STORAGE_LOCAL === 'true'
+      cfg.STORAGE_LOCAL === 'true'
         ? new StorageLocal(this.filesService)
-        : new StorageRemote(this.remoteServerService, process.env.CDN_URL);
+        : new StorageRemote(this.remoteServerService, cfg.CDN_URL);
   }
 
   async save(

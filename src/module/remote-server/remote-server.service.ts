@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as Client from 'ftp';
+import cfg from 'src/config/app.config';
 
 @Injectable()
 export class RemoteServerService {
   private ftp_config = {
-    host: process.env.FTP_HOST,
-    port: Number(process.env.FTP_PORT),
-    user: process.env.FTP_USER,
-    password: process.env.FTP_PASSWORD,
+    host: cfg.FTP_HOST,
+    port: cfg.FTP_PORT,
+    user: cfg.FTP_USER,
+    password: cfg.FTP_PASSWORD,
   };
 
   private remote_path_root = '/storage/';
