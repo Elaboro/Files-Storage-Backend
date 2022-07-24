@@ -1,5 +1,12 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { CreateUserDto } from './dto/user.dto';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  LoginUserDto,
+  RegisterUserDto,
+} from './dto/user.dto';
 import { Users } from '../entity/users.model';
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -8,7 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private jwtService: JwtService) {}
 
-  async register(dto: CreateUserDto): Promise<object> {
+  async register(dto: RegisterUserDto): Promise<object> {
     try {
       const hash_password: string = bcrypt.hashSync(dto.password, 10);
       const user: Users = new Users();
@@ -23,7 +30,7 @@ export class AuthService {
     }
   }
 
-  async login(dto: CreateUserDto): Promise<object> {
+  async login(dto: LoginUserDto): Promise<object> {
     try {
       const username: string = dto.username;
       const email: string = dto.email;

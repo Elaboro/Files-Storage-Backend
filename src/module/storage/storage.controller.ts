@@ -19,11 +19,27 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Users } from '../entity/users.model';
 import { Response } from '@nestjs/common';
 import { Response as Res } from 'express';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Storage')
 @Controller('storage')
 export class StorageController {
   constructor(private storageService: StorageService) {}
 
+  @ApiOperation({
+    summary: "Upload file to storage.",
+    description: `Upload files by transferring 32-byte key (aes-256-ctr) for encryption.
+      Key is needed to decrypt and download files.
+      Response contains an array of file IDs.
+    `,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('upload')
   @UseInterceptors(AnyFilesInterceptor())
@@ -36,6 +52,10 @@ export class StorageController {
     return await this.storageService.save(dto, files, user);
   }
 
+  @ApiOperation({
+    summary: "Download file from file storage.",
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('download/id/:id/key/:key')
   async download(@Param() dto: DownloadFileDto, @Response() res: Res) {
@@ -51,12 +71,19 @@ export class StorageController {
     file.data.pipe(res);
   }
 
+  @ApiOperation({
+    summary: "Delete file from file storage."
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   async delete(@Param() dto: DeleteFileDto) {
     return await this.storageService.delete(dto);
   }
 
+  @ApiOperation({
+    summary: "Get entire list of files from storage."
+  })
   @Get()
   storageInformation() {
     return this.storageService.getInformation();
