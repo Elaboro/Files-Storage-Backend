@@ -91,7 +91,7 @@ export class StorageService {
       const id: number = dto.id;
       const key: string = dto.key;
 
-      const storage: Storage = await Storage.findOne<Storage>({ id });
+      const [storage]: Storage[] = await Storage.findBy<Storage>({ id });
       if (typeof storage === 'undefined') return;
 
       const stream: Stream = await this.storage_manager.extract(storage.uuid);
@@ -115,7 +115,7 @@ export class StorageService {
   async delete(dto: DeleteFileDto): Promise<any> {
     try {
       const id: number = dto.id;
-      const storage: Storage = await Storage.findOne<Storage>({ id });
+      const [storage]: Storage[] = await Storage.findBy<Storage>({ id });
       if (typeof storage === 'undefined') return;
 
       this.storage_manager.delete(storage.uuid);
