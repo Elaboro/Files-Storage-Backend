@@ -8,7 +8,7 @@ import {
 import { IsEmail, Length } from 'class-validator';
 import { Storage } from '../entity/storage.model';
 
-@Entity({ name: 'Users' })
+@Entity({ name: 'user' })
 export class Users extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

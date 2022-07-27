@@ -7,6 +7,7 @@ import {
 import { AppModule } from './app.module';
 import { INestApplication } from '@nestjs/common';
 import cfg from './config/app.config';
+import DataSource from './config/datasource';
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
@@ -18,6 +19,8 @@ async function bootstrap(): Promise<void> {
     .build();
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("/api/docs", app, document);
+
+  await DataSource.initialize();
 
   const PORT: string = cfg.PORT;
   await app.listen(PORT);

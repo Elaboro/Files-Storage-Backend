@@ -13,10 +13,10 @@ import { StorageRemote } from './storage.type/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
 import { RemoteServerService } from '../remote-server/remote-server.service';
 import { FilesService } from '../files/files.service';
-import cfg from 'src/config/app.config';
-import { CryptoService } from 'src/lib/crypto/CryptoService';
-import { PackService } from 'src/lib/pack/PackService';
-import { IEncrypt } from 'src/lib/crypto/type/Type';
+import cfg from './../../config/app.config';
+import { CryptoService } from './../../lib/crypto/CryptoService';
+import { PackService } from './../../lib/pack/PackService';
+import { IEncrypt } from './../../lib/crypto/type/Type';
 
 @Injectable()
 export class StorageService {

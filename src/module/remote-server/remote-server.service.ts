@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import Client from 'ftp';
-import cfg from 'src/config/app.config';
+import cfg from './../../config/app.config';
 
 @Injectable()
 export class RemoteServerService {
