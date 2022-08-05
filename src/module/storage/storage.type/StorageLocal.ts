@@ -1,6 +1,6 @@
 import path from 'path';
 import { IStorage } from '../interfaces/IStorage';
-import { FilesService } from '../../files/files.service';
+import { FileSystemService } from './../../../lib/filesystem/FileSystemService';
 
 export class StorageLocal implements IStorage {
   private UPLOADED_FILES_PATH: string = path.resolve(
@@ -9,14 +9,18 @@ export class StorageLocal implements IStorage {
     'uploaded_files',
   );
 
-  constructor(private filesService: FilesService) {}
+  private fileSystemService: FileSystemService;
 
-  extract(file_name: string): any {
-    return this.filesService.getStreamFile(this.UPLOADED_FILES_PATH, file_name);
+  constructor() {
+    this.fileSystemService = new FileSystemService();
   }
 
-  async save(file_name: string, data): Promise<boolean> {
-    return this.filesService.saveFile(
+  extract(file_name: string): any {
+    return this.fileSystemService.get(this.UPLOADED_FILES_PATH, file_name);
+  }
+
+  async save(file_name: string, data): Promise<void> {
+    return this.fileSystemService.save(
       this.UPLOADED_FILES_PATH,
       file_name,
       data,
@@ -24,6 +28,6 @@ export class StorageLocal implements IStorage {
   }
 
   async delete(file_name: string): Promise<void> {
-    return this.filesService.deleteFile(this.UPLOADED_FILES_PATH, file_name);
+    return this.fileSystemService.delete(this.UPLOADED_FILES_PATH, file_name);
   }
 }
