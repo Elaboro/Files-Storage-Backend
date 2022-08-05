@@ -12,7 +12,7 @@ const cfg = {
   POSTGRES_LOGGING: process.env.POSTGRES_LOGGING,
   JWT_SECRET_KEY: `${process.env.JWT_SECRET_KEY}`,
   JWT_EXPIRATION_TIME: process.env.JWT_EXPIRATION_TIME,
-  STORAGE_LOCAL: process.env.STORAGE_LOCAL,
+  STORAGE_METHOD: process.env.STORAGE_METHOD,
   CDN_URL: process.env.CDN_URL,
   FTP_HOST: process.env.FTP_HOST,
   FTP_PORT: Number(process.env.FTP_PORT),

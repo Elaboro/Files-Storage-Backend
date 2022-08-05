@@ -23,10 +23,12 @@ export class StorageService {
   private packService = new PackService();
 
   constructor() {
-    this.storage_manager =
-      cfg.STORAGE_LOCAL === 'true'
-        ? new StorageLocal()
-        : new StorageRemote();
+    const method: string = cfg.STORAGE_METHOD?.toLowerCase();
+
+    switch(method) {
+      case "local": this.storage_manager = new StorageLocal();
+      case "remote": this.storage_manager = new StorageRemote();
+    }
   }
 
   async save(
