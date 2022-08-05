@@ -1,16 +1,22 @@
 import fetch from 'node-fetch';
+import cfg from '../../../config/app.config';
+import { FtpConfig } from '../../../lib/ftp/type/Type';
 import { IStorage } from '../interfaces/IStorage';
 import { FtpService } from './../../../lib/ftp/FtpService';
 
 export class StorageRemote implements IStorage {
-  private url_domain: string;
+  private url_domain: string = cfg.CDN_URL;
 
-  constructor(
-    private FtpService: FtpService,
-    url_domain: string,
-  ) {
-    this.url_domain = url_domain;
-  }
+  private ftp_config: FtpConfig = {
+    options: {
+      host: cfg.FTP_HOST,
+      port: cfg.FTP_PORT,
+      user: cfg.FTP_USER,
+      password: cfg.FTP_PASSWORD,
+    },
+    remote_path_root: '/storage/',
+  };
+  private FtpService = new FtpService(this.ftp_config);
 
   async extract(file_name: string): Promise<any> {
     const url: URL = new URL(file_name, this.url_domain);

@@ -11,12 +11,10 @@ import { File } from './storage.type/File';
 import { StorageLocal } from './storage.type/StorageLocal';
 import { StorageRemote } from './storage.type/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
-import { FtpService } from './../../lib/ftp/FtpService';
 import cfg from './../../config/app.config';
 import { CryptoService } from './../../lib/crypto/CryptoService';
 import { PackService } from './../../lib/pack/PackService';
 import { IEncrypt } from './../../lib/crypto/type/Type';
-import { FtpConfig } from '../../lib/ftp/type/Type';
 
 @Injectable()
 export class StorageService {
@@ -24,22 +22,11 @@ export class StorageService {
   private cryptoService = new CryptoService();
   private packService = new PackService();
 
-  private ftp_config: FtpConfig = {
-    options: {
-      host: cfg.FTP_HOST,
-      port: cfg.FTP_PORT,
-      user: cfg.FTP_USER,
-      password: cfg.FTP_PASSWORD,
-    },
-    remote_path_root: '/storage/',
-  };
-  private FtpService = new FtpService(this.ftp_config);
-
   constructor() {
     this.storage_manager =
       cfg.STORAGE_LOCAL === 'true'
         ? new StorageLocal()
-        : new StorageRemote(this.FtpService, cfg.CDN_URL);
+        : new StorageRemote();
   }
 
   async save(
