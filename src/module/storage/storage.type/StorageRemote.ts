@@ -1,12 +1,12 @@
 import fetch from 'node-fetch';
 import { IStorage } from '../interfaces/IStorage';
-import { RemoteServerService } from '../../remote-server/remote-server.service';
+import { FtpService } from './../../../lib/ftp/FtpService';
 
 export class StorageRemote implements IStorage {
   private url_domain: string;
 
   constructor(
-    private remoteServerService: RemoteServerService,
+    private FtpService: FtpService,
     url_domain: string,
   ) {
     this.url_domain = url_domain;
@@ -30,10 +30,10 @@ export class StorageRemote implements IStorage {
   }
 
   async save(file_name: string, data) {
-    return this.remoteServerService.saveFile(file_name, data);
+    return this.FtpService.save(file_name, data);
   }
 
   async delete(file_name: string) {
-    return this.remoteServerService.deleteFile(file_name);
+    return this.FtpService.delete(file_name);
   }
 }
