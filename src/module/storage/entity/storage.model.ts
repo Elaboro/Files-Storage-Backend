@@ -7,7 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Users } from '../entity/users.model';
+import { Users } from '../../auth/entity/users.model';
 
 @Entity({ name: 'storage' })
 export class Storage extends BaseEntity {

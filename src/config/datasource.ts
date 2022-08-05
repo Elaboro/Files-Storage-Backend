@@ -1,5 +1,5 @@
-import { Storage } from "./../module/entity/storage.model";
-import { Users } from "./../module/entity/users.model";
+import { Storage } from "../module/storage/entity/storage.model";
+import { Users } from "../module/auth/entity/users.model";
 import { DataSource } from "typeorm";
 import cfg from "./app.config";
 

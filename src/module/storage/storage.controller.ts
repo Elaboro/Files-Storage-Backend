@@ -16,7 +16,7 @@ import { UploadFilesDto } from './dto/upload-files.dto';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Users } from '../entity/users.model';
+import { Users } from '../auth/entity/users.model';
 import { Response } from '@nestjs/common';
 import { Response as Res } from 'express';
 import {

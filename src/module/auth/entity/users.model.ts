@@ -6,7 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { IsEmail, Length } from 'class-validator';
-import { Storage } from '../entity/storage.model';
+import { Storage } from '../../storage/entity/storage.model';
 
 @Entity({ name: 'user' })
 export class Users extends BaseEntity {
