@@ -25,6 +25,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { IStorageFile } from './interfaces/IStorageFile';
 
 @ApiTags('Storage')
 @Controller('storage')
@@ -59,7 +60,7 @@ export class StorageController {
   @UseGuards(JwtAuthGuard)
   @Get('download/id/:id/key/:key')
   async download(@Param() dto: DownloadFileDto, @Response() res: Res) {
-    const file = await this.storageService.choose(dto);
+    const file: IStorageFile = await this.storageService.choose(dto);
 
     res.set({
       'Content-Type': 'application/force-download',
@@ -68,7 +69,7 @@ export class StorageController {
       )}"`,
     });
 
-    file.data.pipe(res);
+    file.stream.pipe(res);
   }
 
   @ApiOperation({

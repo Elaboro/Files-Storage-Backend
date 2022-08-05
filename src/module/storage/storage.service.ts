@@ -7,7 +7,6 @@ import { Storage } from './entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { Users } from '../auth/entity/users.model';
-import { File } from './storage.type/File';
 import { StorageLocal } from './storage.type/StorageLocal';
 import { StorageRemote } from './storage.type/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
@@ -15,6 +14,7 @@ import cfg from './../../config/app.config';
 import { CryptoService } from './../../lib/crypto/CryptoService';
 import { PackService } from './../../lib/pack/PackService';
 import { IEncrypt } from './../../lib/crypto/type/Type';
+import { IStorageFile } from './interfaces/IStorageFile';
 
 @Injectable()
 export class StorageService {
@@ -81,7 +81,7 @@ export class StorageService {
     });
   }
 
-  async choose(dto: DownloadFileDto) {
+  async choose(dto: DownloadFileDto): Promise<IStorageFile> {
     try {
       const id: number = dto.id;
       const key: string = dto.key;
@@ -93,12 +93,11 @@ export class StorageService {
       const decrypt: Decipher = this.cryptoService.decrypt(key, storage.iv);
       const unpack: Gunzip = this.packService.unpack();
 
-      const file = new File(
-        storage.file_name,
-        stream.pipe(decrypt).pipe(unpack),
-      );
+      return {
+        name: storage.file_name,
+        stream: stream.pipe(decrypt).pipe(unpack),
+      };
 
-      return file;
     } catch (e) {
       throw new HttpException(
         'File has been not downloaded.',
