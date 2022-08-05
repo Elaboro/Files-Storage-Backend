@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import cfg from '../../../config/app.config';
 import { FtpConfig } from '../../../lib/ftp/type/Type';
 import { IStorage } from '../interfaces/IStorage';
-import { FtpService } from './../../../lib/ftp/FtpService';
+import { FtpService } from '../../../lib/ftp/FtpService';
 
 export class StorageRemote implements IStorage {
   private url_domain: string = cfg.CDN_URL;

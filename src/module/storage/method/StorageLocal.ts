@@ -1,6 +1,6 @@
 import path from 'path';
 import { IStorage } from '../interfaces/IStorage';
-import { FileSystemService } from './../../../lib/filesystem/FileSystemService';
+import { FileSystemService } from '../../../lib/filesystem/FileSystemService';
 
 export class StorageLocal implements IStorage {
   private UPLOADED_FILES_PATH: string = path.resolve(
