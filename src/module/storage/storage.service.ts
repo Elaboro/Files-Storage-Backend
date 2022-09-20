@@ -11,9 +11,9 @@ import { StorageLocal } from './method/StorageLocal';
 import { StorageRemote } from './method/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
 import cfg from './../../config/app.config';
-import { CryptoService } from './../../lib/crypto/CryptoService';
-import { PackService } from './../../lib/pack/PackService';
-import { IEncrypt } from './../../lib/crypto/type/Type';
+import { CryptoService } from '../utils/crypto/CryptoService';
+import { PackService } from '../utils/pack/PackService';
+import { IEncrypt } from '../utils/crypto/type/Type';
 import { IStorageFile } from './interfaces/IStorageFile';
 
 @Injectable()
