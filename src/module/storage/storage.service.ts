@@ -6,7 +6,7 @@ import { Gzip, Gunzip } from 'zlib';
 import { Storage } from './entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
-import { Users } from '../auth/entity/users.model';
+import { User } from '../auth/entity/user.model';
 import { StorageLocal } from './method/StorageLocal';
 import { StorageRemote } from './method/StorageRemote';
 import { IStorage } from './interfaces/IStorage';
@@ -46,7 +46,7 @@ export class StorageService {
   async save(
     dto: UploadFilesDto,
     files: Array<Express.Multer.File>,
-    user: Users,
+    user: User,
   ): Promise<number[]> {
     const ids: number[] = await Promise.all(
       files.map(async (file): Promise<number> => {
@@ -141,18 +141,18 @@ export class StorageService {
   async getInformation() {
     try {
       const storage_info: any = await Storage.createQueryBuilder('storages')
-        .leftJoinAndSelect('storages.user', 'users')
+        .leftJoinAndSelect('storages.user', 'user')
         .select([
           'storages.id AS id',
           'storages.file_name AS file_name',
-          'users.username AS username',
+          'user.username AS username',
         ])
-        .orderBy('users.id', 'ASC')
+        .orderBy('user.id', 'ASC')
         .getRawMany();
       return storage_info;
     } catch (e) {
       throw new HttpException(
-        'Error searching  storage users.',
+        'Error searching storage user.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -16,7 +16,7 @@ import { UploadFilesDto } from './dto/upload-files.dto';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Users } from '../auth/entity/users.model';
+import { User } from '../auth/entity/user.model';
 import { Response } from '@nestjs/common';
 import { Response as Res } from 'express';
 import {
@@ -49,7 +49,7 @@ export class StorageController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Request() request,
   ) {
-    const user: Users = request.user;
+    const user: User = request.user;
     return await this.storageService.save(dto, files, user);
   }
 

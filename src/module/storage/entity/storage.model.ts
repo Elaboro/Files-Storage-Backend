@@ -7,7 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Users } from '../../auth/entity/users.model';
+import { User } from '../../auth/entity/user.model';
 
 @Entity({ name: 'storage' })
 export class Storage extends BaseEntity {
@@ -24,7 +24,7 @@ export class Storage extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   file_name: string;
 
-  @ManyToOne(() => Users, (user) => user.files)
+  @ManyToOne(() => User, (user) => user.files)
   @JoinColumn({ name: 'user_id' })
-  user: Users;
+  user: User;
 }

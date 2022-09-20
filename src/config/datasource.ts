@@ -1,5 +1,5 @@
 import { Storage } from "../module/storage/entity/storage.model";
-import { Users } from "../module/auth/entity/users.model";
+import { User } from "../module/auth/entity/user.model";
 import { DataSource } from "typeorm";
 import cfg from "./app.config";
 
@@ -12,7 +12,7 @@ export default new DataSource({
   database: cfg.POSTGRES_DATABASE,
   synchronize: false,
   logging: (cfg.POSTGRES_LOGGING?.toLowerCase() === "true"),
-  entities: [Storage, Users],
+  entities: [Storage, User],
   subscribers: ["src/subscriber/*.{ts, js}"],
   migrations: ["src/migration/*.{ts, js}"],
 });

@@ -7,7 +7,7 @@ import {
   LoginUserDto,
   RegisterUserDto,
 } from './dto/user.dto';
-import { Users } from './entity/users.model';
+import { User } from './entity/user.model';
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -18,7 +18,7 @@ export class AuthService {
   async register(dto: RegisterUserDto): Promise<object> {
     try {
       const hash_password: string = bcrypt.hashSync(dto.password, 10);
-      const user: Users = new Users();
+      const user: User = new User();
       user.username = dto.username;
       user.password = hash_password;
       user.email = dto.email;
@@ -36,7 +36,7 @@ export class AuthService {
       const email: string = dto.email;
       const password: string = dto.password;
 
-      const user: Users = await Users.findOne({
+      const user: User = await User.findOne({
         where: [{ username: username }, { email: email }],
       });
       if (!user) {
@@ -66,7 +66,7 @@ export class AuthService {
     }
   }
 
-  generateToken(user: Users): object {
+  generateToken(user: User): object {
     const payload: object = {
       id: user.id,
       username: user.username,
