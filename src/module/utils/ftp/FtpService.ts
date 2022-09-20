@@ -1,16 +1,28 @@
+import { Injectable } from '@nestjs/common';
 import Client from 'ftp';
+import cfg from '../../../config/app.config';
 import {
   FtpConfig,
 } from './type/Type';
 
+@Injectable()
 export class FtpService {
 
   private config: FtpConfig;
   private remote_path_root: string;
 
-  constructor(config: FtpConfig) {
-    this.config = config;
-    this.remote_path_root = config.remote_path_root || "/";
+  constructor() {
+    const ftp_config: FtpConfig = {
+      options: {
+        host: cfg.FTP_HOST,
+        port: cfg.FTP_PORT,
+        user: cfg.FTP_USER,
+        password: cfg.FTP_PASSWORD,
+      },
+      remote_path_root: '/storage/',
+    };
+    this.config = ftp_config;
+    this.remote_path_root = ftp_config.remote_path_root || "/";
   }
 
   async save(

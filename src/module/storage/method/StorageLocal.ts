@@ -9,11 +9,10 @@ export class StorageLocal implements IStorage {
     'uploaded_files',
   );
 
-  private fileSystemService: FileSystemService;
 
-  constructor() {
-    this.fileSystemService = new FileSystemService();
-  }
+  constructor(
+    private readonly fileSystemService: FileSystemService,
+  ) {}
 
   extract(file_name: string): any {
     return this.fileSystemService.get(this.UPLOADED_FILES_PATH, file_name);

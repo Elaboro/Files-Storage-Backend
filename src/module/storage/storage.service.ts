@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { UploadFilesDto } from './dto/upload-files.dto';
 import { Readable, Stream } from 'stream';
 import { Cipher, Decipher } from 'crypto';
@@ -15,19 +15,31 @@ import { CryptoService } from '../utils/crypto/CryptoService';
 import { PackService } from '../utils/pack/PackService';
 import { IEncrypt } from '../utils/crypto/type/Type';
 import { IStorageFile } from './interfaces/IStorageFile';
+import { FtpService } from '../utils/ftp/FtpService';
+import { FileSystemService } from '../utils/filesystem/FileSystemService';
 
 @Injectable()
 export class StorageService {
   private storage_manager: IStorage;
-  private cryptoService = new CryptoService();
-  private packService = new PackService();
 
-  constructor() {
+  constructor(
+    @Inject(PackService)
+    private readonly packService: PackService,
+
+    @Inject(CryptoService)
+    private readonly cryptoService: CryptoService,
+
+    @Inject(FtpService)
+    private readonly ftpService: FtpService,
+
+    @Inject(FileSystemService)
+    private readonly fileSystemService: FileSystemService,
+  ) {
     const method: string = cfg.STORAGE_METHOD?.toLowerCase();
 
     switch(method) {
-      case "local": this.storage_manager = new StorageLocal();
-      case "remote": this.storage_manager = new StorageRemote();
+      case "local": this.storage_manager = new StorageLocal(this.fileSystemService);
+      case "remote": this.storage_manager = new StorageRemote(this.ftpService);
     }
   }
 

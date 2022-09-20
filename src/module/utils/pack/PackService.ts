@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import zlib,
 {
   Gzip,
   Gunzip,
 } from 'zlib';
 
+@Injectable()
 export class PackService {
 
   pack(): Gzip {

@@ -1,6 +1,8 @@
 import path from 'path';
 import fs, { ReadStream } from 'fs';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class FileSystemService {
 
   get(file_path: string, file_name: string): ReadStream {
