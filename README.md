@@ -10,25 +10,7 @@ You can also delete the file by passing its ID. Meta information about the file 
 
 ## To launch the application
 
-Create `.dev.env` and fill in:
-```
-PORT=
-POSTGRES_HOST=
-POSTGRES_PORT=
-POSTGRES_USERNAME=
-POSTGRES_PASSWORD=
-POSTGRES_DATABASE=
-COMPOSE_PGADMIN_DEFAULT_EMAIL=
-COMPOSE_PGADMIN_DEFAULT_PASSWORD=
-JWT_SECRET_KEY=
-STORAGE_LOCAL=true
-CDN_PROVIDER_DOMAIN=
-CDN_URL=
-FTP_HOST=
-FTP_PORT=
-FTP_USER=
-FTP_PASSWORD=
-```
+Create `.dev.env` and fill in (example: .env.sample)
 
 
 ## Documentation REST API

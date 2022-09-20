@@ -10,25 +10,7 @@
 
 ## Для запуска приложения
 
-Создайте `.dev.env` и заполните:
-```
-PORT=
-POSTGRES_HOST=
-POSTGRES_PORT=
-POSTGRES_USERNAME=
-POSTGRES_PASSWORD=
-POSTGRES_DATABASE=
-COMPOSE_PGADMIN_DEFAULT_EMAIL=
-COMPOSE_PGADMIN_DEFAULT_PASSWORD=
-JWT_SECRET_KEY=
-STORAGE_LOCAL=true
-CDN_PROVIDER_DOMAIN=
-CDN_URL=
-FTP_HOST=
-FTP_PORT=
-FTP_USER=
-FTP_PASSWORD=
-```
+Создайте `.dev.env` и заполните (пример: .env.sample)
 
 
 ## Документация REST API

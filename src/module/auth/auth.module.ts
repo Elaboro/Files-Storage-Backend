@@ -11,7 +11,7 @@ import cfg from './../../config/app.config';
     JwtModule.register({
       secret: cfg.JWT_SECRET_KEY,
       signOptions: {
-        expiresIn: '2h',
+        expiresIn: cfg.JWT_EXPIRATION_TIME,
       },
     }),
   ],
