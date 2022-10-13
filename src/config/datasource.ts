@@ -3,7 +3,7 @@ import { User } from "../module/auth/entity/user.model";
 import { DataSource } from "typeorm";
 import cfg from "./app.config";
 
-export default new DataSource({
+export const dataSourcePostgres = new DataSource({
   type: "postgres",
   host: cfg.POSTGRES_HOST,
   port: cfg.POSTGRES_PORT,

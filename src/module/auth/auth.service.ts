@@ -10,19 +10,34 @@ import {
 import { User } from './entity/user.model';
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UserRepo } from './repository/UserRepo';
+import { UserData } from './type/Type';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
 
-  async register(dto: RegisterUserDto): Promise<object> {
+    private readonly userRepo: UserRepo,
+  ) {}
+
+  async register(dto: RegisterUserDto): Promise<any> {
+    const {
+      username,
+      password,
+      email,
+    } = dto;
+
     try {
-      const hash_password: string = bcrypt.hashSync(dto.password, 10);
-      const user: User = new User();
-      user.username = dto.username;
-      user.password = hash_password;
-      user.email = dto.email;
-      await user.save();
+      const password_hash: string = bcrypt.hashSync(password, 10);
+
+      const user_data: UserData = {
+        username,
+        password: password_hash,
+        email,
+      };
+
+      const user: User = await this.userRepo.createUser(user_data);
 
       return this.generateToken(user);
     } catch (e) {
@@ -32,13 +47,7 @@ export class AuthService {
 
   async login(dto: LoginUserDto): Promise<object> {
     try {
-      const username: string = dto.username;
-      const email: string = dto.email;
-      const password: string = dto.password;
-
-      const user: User = await User.findOne({
-        where: [{ username: username }, { email: email }],
-      });
+      const user: User = await this.userRepo.getUser(<UserData>dto);
       if (!user) {
         throw new HttpException(
           'Invalid username or email',
@@ -47,9 +56,10 @@ export class AuthService {
       }
 
       const is_password_equals: boolean = bcrypt.compareSync(
-        password,
+        dto.password,
         user.password,
       );
+      delete user.password;
       if (!is_password_equals) {
         throw new HttpException(
           'Invalid username or email',
