@@ -59,20 +59,6 @@ export class StorageService {
         const storage: Storage = new Storage();
         await storage.save();
 
-        const file_info: any = { ...file, buffer: null };
-        delete file_info.buffer;
-        delete file_info.fieldname;
-
-        const file_info_json: string = JSON.stringify(file_info);
-
-        const meta_stream: Readable = new Readable();
-        meta_stream._read = () => {
-          // do nothing.
-        };
-        meta_stream.push(file_info_json);
-        meta_stream.push(null);
-        this.storage_manager.save(storage.uuid + '.meta.json', meta_stream);
-
         const file_readable: Readable =
           this.createReadableStreamByBuffer(file.buffer);
         const pack: Gzip = this.packService.pack();
@@ -135,7 +121,6 @@ export class StorageService {
     if (!storage) throw new Error("File not found");
 
     this.storage_manager.delete(storage.uuid);
-    this.storage_manager.delete(storage.uuid + '.meta.json');
 
     this.storageRepo.deleteFileById(dto.id);
 
