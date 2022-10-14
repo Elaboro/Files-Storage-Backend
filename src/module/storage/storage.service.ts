@@ -17,12 +17,15 @@ import { IEncrypt } from '../utils/crypto/type/Type';
 import { IStorageFile } from './interfaces/IStorageFile';
 import { FtpService } from '../utils/ftp/FtpService';
 import { FileSystemService } from '../utils/filesystem/FileSystemService';
+import { StorageRepo } from './repository/StorageRepo';
 
 @Injectable()
 export class StorageService {
   private storage_manager: IStorage;
 
   constructor(
+    private readonly storageRepo: StorageRepo,
+
     @Inject(PackService)
     private readonly packService: PackService,
 
@@ -48,6 +51,9 @@ export class StorageService {
     files: Array<Express.Multer.File>,
     user: User,
   ): Promise<number[]> {
+
+    // todo later + with this.storageRepo.createFile
+
     const ids: number[] = await Promise.all(
       files.map(async (file): Promise<number> => {
         const storage: Storage = new Storage();
@@ -75,6 +81,13 @@ export class StorageService {
         const stream: any = file_readable.pipe(pack).pipe(cipher);
         this.storage_manager.save(storage.uuid, stream);
 
+        // example
+        this.storageRepo.createFile({
+          iv: encrypt.iv,
+          originalname: file.originalname,
+          user: user
+        });
+
         storage.iv = encrypt.iv;
         storage.file_name = file.originalname;
         storage.user = user;
@@ -95,13 +108,10 @@ export class StorageService {
     });
   }
 
-  async choose(dto: DownloadFileDto): Promise<IStorageFile> {
+  async choose({ id, key }: DownloadFileDto): Promise<IStorageFile> {
     try {
-      const id: number = dto.id;
-      const key: string = dto.key;
-
-      const [storage]: Storage[] = await Storage.findBy<Storage>({ id });
-      if (typeof storage === 'undefined') return;
+      const storage: Storage = await this.storageRepo.getFileById(id);
+      if (!storage) throw new Error("File not found");
 
       const stream: Stream = await this.storage_manager.extract(storage.uuid);
       const decrypt: Decipher = this.cryptoService.decrypt(key, storage.iv);
@@ -120,41 +130,19 @@ export class StorageService {
     }
   }
 
-  async delete(dto: DeleteFileDto): Promise<any> {
-    try {
-      const id: number = dto.id;
-      const [storage]: Storage[] = await Storage.findBy<Storage>({ id });
-      if (typeof storage === 'undefined') return;
+  async delete(dto: DeleteFileDto): Promise<Storage> {
+    const storage: Storage = await this.storageRepo.getFileById(dto.id);
+    if (!storage) throw new Error("File not found");
 
-      this.storage_manager.delete(storage.uuid);
-      this.storage_manager.delete(storage.uuid + '.meta.json');
+    this.storage_manager.delete(storage.uuid);
+    this.storage_manager.delete(storage.uuid + '.meta.json');
 
-      Storage.delete({ id });
-    } catch (e) {
-      throw new HttpException(
-        'Error deleting a file.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.storageRepo.deleteFileById(dto.id);
+
+    return storage;
   }
 
-  async getInformation() {
-    try {
-      const storage_info: any = await Storage.createQueryBuilder('storages')
-        .leftJoinAndSelect('storages.user', 'user')
-        .select([
-          'storages.id AS id',
-          'storages.file_name AS file_name',
-          'user.username AS username',
-        ])
-        .orderBy('user.id', 'ASC')
-        .getRawMany();
-      return storage_info;
-    } catch (e) {
-      throw new HttpException(
-        'Error searching storage user.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+  async getFileList() {
+    return this.storageRepo.getFileList();
   }
 }

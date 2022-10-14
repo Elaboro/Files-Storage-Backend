@@ -9,6 +9,8 @@ import {
   Param,
   UseGuards,
   Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
@@ -26,6 +28,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { IStorageFile } from './interfaces/IStorageFile';
+import { Storage } from './entity/storage.model';
 
 @ApiTags('Storage')
 @Controller('storage')
@@ -79,14 +82,22 @@ export class StorageController {
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   async delete(@Param() dto: DeleteFileDto) {
-    return await this.storageService.delete(dto);
+    try {
+      const { file_name, id }: Storage = await this.storageService.delete(dto);
+      return { file_name, id };
+    } catch (e) {
+      throw new HttpException(
+        'Error deleting a file.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @ApiOperation({
     summary: "Get entire list of files from storage."
   })
   @Get()
-  storageInformation() {
-    return this.storageService.getInformation();
+  async getFileList() {
+    return await this.storageService.getFileList();
   }
 }
