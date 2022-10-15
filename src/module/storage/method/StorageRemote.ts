@@ -1,30 +1,30 @@
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import cfg from '../../../config/app.config';
 import { IStorage } from '../interfaces/IStorage';
 import { FtpService } from '../../utils/ftp/FtpService';
+import { Readable } from 'stream';
 
 export class StorageRemote implements IStorage {
 
   constructor(
     private readonly ftpService: FtpService
-  ){}
+  ) {}
 
   private url_domain: string = cfg.CDN_URL;
 
-  async extract(file_name: string): Promise<any> {
+  async getFileStream(file_name: string): Promise<Readable> {
     const url: URL = new URL(file_name, this.url_domain);
 
-    const body: any = await fetch(url.href)
-      .then((res) => {
+    const body: Readable = await fetch(url.href)
+      .then((res: Response) => {
         if (res.status >= 400) {
           throw new Error('Bad response from server');
         }
-        return res.body;
+        return Readable.from(res.body);
       })
       .catch((e) => {
-        console.log(e);
+        throw e;
       });
-
     return body;
   }
 

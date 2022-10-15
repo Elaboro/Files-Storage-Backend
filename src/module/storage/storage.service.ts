@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { UploadFilesDto } from './dto/upload-files.dto';
-import { Readable, Stream } from 'stream';
-import { Cipher, Decipher } from 'crypto';
+import { Duplex, Readable } from 'stream';
+import { Decipher } from 'crypto';
 import { Gzip, Gunzip } from 'zlib';
 import { Storage } from './entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
@@ -13,7 +13,7 @@ import { IStorage } from './interfaces/IStorage';
 import cfg from './../../config/app.config';
 import { CryptoService } from '../utils/crypto/CryptoService';
 import { PackService } from '../utils/pack/PackService';
-import { IEncrypt } from '../utils/crypto/type/Type';
+import { CryptInfo, IEncrypt } from '../utils/crypto/type/Type';
 import { IStorageFile } from './interfaces/IStorageFile';
 import { FtpService } from '../utils/ftp/FtpService';
 import { FileSystemService } from '../utils/filesystem/FileSystemService';
@@ -47,7 +47,7 @@ export class StorageService {
   }
 
   async save(
-    dto: UploadFilesDto,
+    { key }: UploadFilesDto,
     files: Array<Express.Multer.File>,
     user: User,
   ): Promise<number[]> {
@@ -59,22 +59,24 @@ export class StorageService {
         const storage: Storage = new Storage();
         await storage.save();
 
-        const file_readable: Readable =
+        const fileStream: Readable =
           this.createReadableStreamByBuffer(file.buffer);
-        const pack: Gzip = this.packService.pack();
-        const encrypt: IEncrypt = this.cryptoService.encrypt(dto.key);
-        const cipher: Cipher = encrypt.cipher;
-        const stream: any = file_readable.pipe(pack).pipe(cipher);
+
+        const packStream: Gzip = this.packService.createPackStream();
+
+        const { cipherStream, iv }: IEncrypt = this.cryptoService.createEncryptByKey(key);
+        
+        const stream: Duplex = fileStream.pipe(packStream).pipe(cipherStream);
         this.storage_manager.save(storage.uuid, stream);
 
         // example
         this.storageRepo.createFile({
-          iv: encrypt.iv,
+          iv,
           originalname: file.originalname,
           user: user
         });
 
-        storage.iv = encrypt.iv;
+        storage.iv = iv;
         storage.file_name = file.originalname;
         storage.user = user;
         await storage.save();
@@ -98,14 +100,17 @@ export class StorageService {
     try {
       const storage: Storage = await this.storageRepo.getFileById(id);
       if (!storage) throw new Error("File not found");
+      const { iv, file_name, uuid }: Storage = storage;
 
-      const stream: Stream = await this.storage_manager.extract(storage.uuid);
-      const decrypt: Decipher = this.cryptoService.decrypt(key, storage.iv);
-      const unpack: Gunzip = this.packService.unpack();
+      const crypt_info: CryptInfo = { key, iv };
+
+      const fileStream: Readable = await this.storage_manager.getFileStream(uuid);
+      const decryptStream: Decipher = this.cryptoService.createDecryptStream(crypt_info);
+      const unpackStream: Gunzip = this.packService.createUnpackStream();
 
       return {
-        name: storage.file_name,
-        stream: stream.pipe(decrypt).pipe(unpack),
+        name: file_name,
+        stream: fileStream.pipe(decryptStream).pipe(unpackStream),
       };
 
     } catch (e) {

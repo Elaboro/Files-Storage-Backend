@@ -1,4 +1,4 @@
-import { IEncrypt } from "./type/Type";
+import { CryptInfo, IEncrypt } from "./type/Type";
 import crypto,
 {
   Cipher,
@@ -9,17 +9,22 @@ import { Injectable } from "@nestjs/common";
 @Injectable()
 export class CryptoService {
 
-  encrypt(key: string): IEncrypt {
-    const algorithm = 'aes-256-ctr';
-    const iv: Buffer = crypto.randomBytes(16);
-    const cipher: Cipher = crypto.createCipheriv(algorithm, key, iv);
+  private settings = {
+    algorithm: "aes-256-ctr",
+    size_bytes_generate: 16,
+  };
 
-    return { cipher: cipher, iv: iv };
+  createEncryptByKey(key: string): IEncrypt {
+    const iv: Buffer = crypto.randomBytes(this.settings.size_bytes_generate);
+    const cipherStream: Cipher = crypto.createCipheriv(this.settings.algorithm, key, iv);
+    return { cipherStream, iv };
   }
 
-  decrypt(key: string, iv: Buffer) {
-    const algorithm = 'aes-256-ctr';
-    const deciper: Decipher = crypto.createDecipheriv(algorithm, key, iv);
-    return deciper;
+  createDecryptStream({ key, iv }: CryptInfo): Decipher {
+    return crypto.createDecipheriv(
+      this.settings.algorithm,
+      key,
+      iv,
+    );
   }
 }

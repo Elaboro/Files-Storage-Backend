@@ -8,13 +8,13 @@ import zlib,
 @Injectable()
 export class PackService {
 
-  pack(): Gzip {
+  createPackStream(): Gzip {
     return zlib.createGzip({
       level: zlib.constants.Z_BEST_COMPRESSION,
     });
   }
 
-  unpack(): Gunzip  {
+  createUnpackStream(): Gunzip  {
     return zlib.createGunzip();
   }
 }

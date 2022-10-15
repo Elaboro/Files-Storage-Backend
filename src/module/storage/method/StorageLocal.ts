@@ -1,6 +1,7 @@
 import path from 'path';
 import { IStorage } from '../interfaces/IStorage';
 import { FileSystemService } from '../../utils/filesystem/FileSystemService';
+import { Readable } from 'stream';
 
 export class StorageLocal implements IStorage {
   private UPLOADED_FILES_PATH: string = path.resolve(
@@ -14,7 +15,7 @@ export class StorageLocal implements IStorage {
     private readonly fileSystemService: FileSystemService,
   ) {}
 
-  extract(file_name: string): any {
+  async getFileStream(file_name: string): Promise<Readable> {
     return this.fileSystemService.get(this.UPLOADED_FILES_PATH, file_name);
   }
 
