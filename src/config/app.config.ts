@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { StorageMethod } from '../module/storage/manager/StorageManager';
 
 dotenv.config({path: `.${process.env.NODE_ENV}.env`});
 
@@ -12,7 +13,11 @@ const cfg = {
   POSTGRES_LOGGING: process.env.POSTGRES_LOGGING,
   JWT_SECRET_KEY: `${process.env.JWT_SECRET_KEY}`,
   JWT_EXPIRATION_TIME: process.env.JWT_EXPIRATION_TIME,
-  STORAGE_METHOD: process.env.STORAGE_METHOD,
+  STORAGE_METHOD: ((STORAGE_METHOD): StorageMethod => {
+    const sm = <StorageMethod>STORAGE_METHOD?.toLowerCase();
+    if(sm === "local") return "local";
+    if(sm === "remote") return "remote";
+  })(process.env.STORAGE_METHOD),
   CDN_URL: process.env.CDN_URL,
   FTP_HOST: process.env.FTP_HOST,
   FTP_PORT: Number(process.env.FTP_PORT),

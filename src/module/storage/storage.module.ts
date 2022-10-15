@@ -6,9 +6,10 @@ import { UtilsModule } from '../utils/utils.module';
 import { StorageRepo } from './repository/StorageRepo';
 import { Storage } from './entity/storage.model';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StorageManager } from './manager/StorageManager';
 
 @Module({
-  providers: [StorageService, StorageRepo],
+  providers: [StorageService, StorageRepo, StorageManager],
   controllers: [StorageController],
   imports: [
     TypeOrmModule.forFeature([Storage]),

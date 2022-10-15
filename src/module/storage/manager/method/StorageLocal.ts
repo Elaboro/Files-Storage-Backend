@@ -1,6 +1,6 @@
 import path from 'path';
-import { IStorage } from '../interfaces/IStorage';
-import { FileSystemService } from '../../utils/filesystem/FileSystemService';
+import { IStorage } from '../../interfaces/IStorage';
+import { FileSystemService } from '../../../utils/filesystem/FileSystemService';
 import { Readable } from 'stream';
 
 export class StorageLocal implements IStorage {

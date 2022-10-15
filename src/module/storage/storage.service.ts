@@ -7,21 +7,15 @@ import { Storage } from './entity/storage.model';
 import { DeleteFileDto } from './dto/delete-file.dto';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { User } from '../auth/entity/user.model';
-import { StorageLocal } from './method/StorageLocal';
-import { StorageRemote } from './method/StorageRemote';
-import { IStorage } from './interfaces/IStorage';
-import cfg from './../../config/app.config';
 import { CryptoService } from '../utils/crypto/CryptoService';
 import { PackService } from '../utils/pack/PackService';
 import { CryptInfo, IEncrypt } from '../utils/crypto/type/Type';
 import { IStorageFile } from './interfaces/IStorageFile';
-import { FtpService } from '../utils/ftp/FtpService';
-import { FileSystemService } from '../utils/filesystem/FileSystemService';
 import { StorageRepo } from './repository/StorageRepo';
+import { StorageManager } from './manager/StorageManager';
 
 @Injectable()
 export class StorageService {
-  private storage_manager: IStorage;
 
   constructor(
     private readonly storageRepo: StorageRepo,
@@ -32,19 +26,9 @@ export class StorageService {
     @Inject(CryptoService)
     private readonly cryptoService: CryptoService,
 
-    @Inject(FtpService)
-    private readonly ftpService: FtpService,
-
-    @Inject(FileSystemService)
-    private readonly fileSystemService: FileSystemService,
-  ) {
-    const method: string = cfg.STORAGE_METHOD?.toLowerCase();
-
-    switch(method) {
-      case "local": this.storage_manager = new StorageLocal(this.fileSystemService);
-      case "remote": this.storage_manager = new StorageRemote(this.ftpService);
-    }
-  }
+    @Inject(StorageManager)
+    private readonly storageManager: StorageManager,
+  ) {}
 
   async save(
     { key }: UploadFilesDto,
@@ -67,7 +51,7 @@ export class StorageService {
         const { cipherStream, iv }: IEncrypt = this.cryptoService.createEncryptByKey(key);
         
         const stream: Duplex = fileStream.pipe(packStream).pipe(cipherStream);
-        this.storage_manager.save(storage.uuid, stream);
+        this.storageManager.save(storage.uuid, stream);
 
         // example
         this.storageRepo.createFile({
@@ -104,7 +88,7 @@ export class StorageService {
 
       const crypt_info: CryptInfo = { key, iv };
 
-      const fileStream: Readable = await this.storage_manager.getFileStream(uuid);
+      const fileStream: Readable = await this.storageManager.getFileStream(uuid);
       const decryptStream: Decipher = this.cryptoService.createDecryptStream(crypt_info);
       const unpackStream: Gunzip = this.packService.createUnpackStream();
 
@@ -125,7 +109,7 @@ export class StorageService {
     const storage: Storage = await this.storageRepo.getFileById(dto.id);
     if (!storage) throw new Error("File not found");
 
-    this.storage_manager.delete(storage.uuid);
+    this.storageManager.delete(storage.uuid);
 
     this.storageRepo.deleteFileById(dto.id);
 

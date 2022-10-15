@@ -1,7 +1,7 @@
 import fetch, { Response } from 'node-fetch';
-import cfg from '../../../config/app.config';
-import { IStorage } from '../interfaces/IStorage';
-import { FtpService } from '../../utils/ftp/FtpService';
+import cfg from '../../../../config/app.config';
+import { IStorage } from '../../interfaces/IStorage';
+import { FtpService } from '../../../utils/ftp/FtpService';
 import { Readable } from 'stream';
 
 export class StorageRemote implements IStorage {
