@@ -1,5 +1,5 @@
 import path from 'path';
-import { IStorage } from '../../interfaces/IStorage';
+import { IStorage } from '../type/Type';
 import { FileSystemService } from '../../../utils/filesystem/FileSystemService';
 import { Readable } from 'stream';
 

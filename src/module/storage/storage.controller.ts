@@ -27,8 +27,8 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { IStorageFile } from './interfaces/IStorageFile';
 import { Storage } from './entity/storage.model';
+import { IStorageFile } from './manager/type/Type';
 
 @ApiTags('Storage')
 @Controller('storage')

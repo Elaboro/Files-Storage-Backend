@@ -1,4 +1,4 @@
-import { Readable } from "stream";
+import { Stream, Readable } from "stream";
 
 export interface IStorage {
   save(
@@ -7,4 +7,9 @@ export interface IStorage {
   ): Promise<any>;
   getFileStream(file_name: string): Promise<Readable>;
   delete(file_name: string): Promise<any>;
+}
+
+export interface IStorageFile {
+  name: string;
+  stream: Stream;
 }

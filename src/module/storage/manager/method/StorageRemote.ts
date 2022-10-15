@@ -1,6 +1,6 @@
 import fetch, { Response } from 'node-fetch';
 import cfg from '../../../../config/app.config';
-import { IStorage } from '../../interfaces/IStorage';
+import { IStorage } from '../type/Type';
 import { FtpService } from '../../../utils/ftp/FtpService';
 import { Readable } from 'stream';
 

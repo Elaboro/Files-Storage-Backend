@@ -10,9 +10,9 @@ import { User } from '../auth/entity/user.model';
 import { CryptoService } from '../utils/crypto/CryptoService';
 import { PackService } from '../utils/pack/PackService';
 import { CryptInfo, IEncrypt } from '../utils/crypto/type/Type';
-import { IStorageFile } from './interfaces/IStorageFile';
 import { StorageRepo } from './repository/StorageRepo';
 import { StorageManager } from './manager/StorageManager';
+import { IStorageFile } from './manager/type/Type';
 
 @Injectable()
 export class StorageService {

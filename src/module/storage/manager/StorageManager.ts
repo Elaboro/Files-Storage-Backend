@@ -3,7 +3,7 @@ import { Readable } from "typeorm/platform/PlatformTools";
 import cfg from "../../../config/app.config";
 import { FileSystemService } from "../../utils/filesystem/FileSystemService";
 import { FtpService } from "../../utils/ftp/FtpService";
-import { IStorage } from "../interfaces/IStorage";
+import { IStorage } from "./type/Type";
 import { StorageLocal } from "./method/StorageLocal";
 import { StorageRemote } from "./method/StorageRemote";
 
