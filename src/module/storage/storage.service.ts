@@ -43,11 +43,8 @@ export class StorageService {
         const storage: Storage = new Storage();
         await storage.save();
 
-        const fileStream: Readable =
-          this.createReadableStreamByBuffer(file.buffer);
-
+        const fileStream: Readable = Readable.from(file.buffer);
         const packStream: Gzip = this.packService.createPackStream();
-
         const { cipherStream, iv }: IEncrypt = this.cryptoService.createEncryptByKey(key);
         
         const stream: Duplex = fileStream.pipe(packStream).pipe(cipherStream);
@@ -69,15 +66,6 @@ export class StorageService {
     );
 
     return ids;
-  }
-
-  createReadableStreamByBuffer(buffer: Buffer): Readable {
-    return new Readable({
-      read() {
-        this.push(buffer);
-        this.push(null);
-      },
-    });
   }
 
   async choose({ id, key }: DownloadFileDto): Promise<IStorageFile> {
