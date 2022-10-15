@@ -1,14 +1,10 @@
-import path from 'path';
 import { IStorage } from '../type/Type';
 import { FileSystemService } from '../../../utils/filesystem/FileSystemService';
 import { Readable } from 'stream';
+import cfg from '../../../../config/app.config';
 
 export class StorageLocal implements IStorage {
-  private UPLOADED_FILES_PATH: string = path.resolve(
-    __dirname,
-    '../..',
-    'uploaded_files',
-  );
+  private UPLOADED_FILES_PATH: string = cfg.DIR_STORAGE_ENCRYPTED;
 
 
   constructor(

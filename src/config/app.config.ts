@@ -1,7 +1,13 @@
 import dotenv from 'dotenv';
+import path from 'path';
 import { StorageMethod } from '../module/storage/manager/StorageManager';
 
 dotenv.config({path: `.${process.env.NODE_ENV}.env`});
+
+const CONSTANTS = {
+  DIR_STORAGE_ENCRYPTED: path.join(__dirname, '..', '..', 'storage', 'encrypted'),
+  DIR_STORAGE_TEMP: path.join(__dirname, '..', '..', 'storage', 'temp'),
+};
 
 const cfg = {
   PORT: process.env.PORT,
@@ -23,6 +29,8 @@ const cfg = {
   FTP_PORT: Number(process.env.FTP_PORT),
   FTP_USER: process.env.FTP_USER,
   FTP_PASSWORD: process.env.FTP_PASSWORD,
+  DIR_STORAGE_ENCRYPTED: CONSTANTS.DIR_STORAGE_ENCRYPTED,
+  DIR_STORAGE_TEMP: CONSTANTS.DIR_STORAGE_TEMP,
 };
 
 export default cfg;
