@@ -34,14 +34,14 @@ export class StorageService {
     { key }: UploadFilesDto,
     files: Array<Express.Multer.File>,
     user: User,
-  ): Promise<number[]> {
+  ): Promise<Storage[]> {
 
-    // todo later + with this.storageRepo.createFile
-
-    const ids: number[] = await Promise.all(
-      files.map(async (file): Promise<number> => {
-        const storage: Storage = new Storage();
-        await storage.save();
+    const storage_list: Promise<Storage
+    >[] = files.map(async (file): Promise<Storage
+    > => {
+      let storage: Storage;
+      try {
+        storage = await this.storageRepo.createFile({ user });
 
         const fileStream: Readable = Readable.from(file.buffer);
         const packStream: Gzip = this.packService.createPackStream();
@@ -50,22 +50,19 @@ export class StorageService {
         const stream: Duplex = fileStream.pipe(packStream).pipe(cipherStream);
         this.storageManager.save(storage.uuid, stream);
 
-        // example
-        this.storageRepo.createFile({
+        this.storageRepo.changeFileById(storage.id, {
           iv,
           originalname: file.originalname,
-          user: user
         });
 
-        storage.iv = iv;
-        storage.file_name = file.originalname;
-        storage.user = user;
-        await storage.save();
-        return storage.id;
-      }),
-    );
+        return storage;
+      } catch (e) {
+        this.storageManager.delete(storage.uuid);
+        this.storageRepo.deleteFileById(storage.id);
+      }
+    });
 
-    return ids;
+    return Promise.all(storage_list);
   }
 
   async choose({ id, key }: DownloadFileDto): Promise<IStorageFile> {

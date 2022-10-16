@@ -22,14 +22,22 @@ export class StorageRepo {
     iv,
     originalname,
     user
-  }: FileData) {
-    // todo later
-
+  }: FileData | Partial<FileData>) {
     const storage: Storage = this.storageRepo.create();
 
     storage.iv = iv;
     storage.file_name = originalname;
     storage.user = user;
+
+    return storage.save();
+  }
+
+  async changeFileById(id: number, file_data: FileData | Partial<FileData>) {
+    const storage: Storage = await this.getFileById(id);
+
+    storage.iv = file_data.iv;
+    storage.file_name = file_data.originalname;
+    storage.user = file_data.user;
 
     return storage.save();
   }
