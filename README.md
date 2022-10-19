@@ -1,6 +1,4 @@
-# Files Storage REST API
-**[[RU](https://github.com/Elaboro/Files-Storage-REST-API/blob/master/readme/README-RU.md)]**
-
+# Files Storage Backend
 
 ## Description
 A demo REST API that can share files via CDN. It can also work with its own local storage.
@@ -8,59 +6,31 @@ A demo REST API that can share files via CDN. It can also work with its own loca
 The simplest authorization and registration is implemented (JWT). After authorization, you can upload files. They will be compressed, encrypted (transmitted encryption key) and placed in storage (or saved to a remote storage via FTP). Some meta information will also be saved. Uploaded files can be downloaded using the received ID and key, they will be decrypted without compression.
 You can also delete the file by passing its ID. Meta information about the file will be deleted along with it.
 
-## To launch the application
+## Main technology stack
+**Node.js**, **TypeScript**, **Nest.js**, **TypeORM**, **PostgreSQL**, **Swagger**
 
-Create `.dev.env` and fill in (example: .env.sample)
+## Launch application
+- create and configure `.dev.env` by analogy with `.env.sample`
+- `npm i`
+- `npm run migration:run` - use with superuser, because migration creates an extension "uuid-ossp"
+- `npm start`
 
+> Configuration `.prod.env` is used for production version.
 
-## Documentation REST API
+## API documentation
+**[SEE MORE](https://github.com/Elaboro/Files-Storage-Backend/blob/master/docs/api.md)** or http://localhost:3000/api/docs/
 
-- **POST** */auth/register*
+## Migrations
+> **Example:** `npm run migration:create src/migration/NameMigration`
 
->Create a new account by passing the parameters:
->
->**username** - username.
->
->**password** - password.
->
->**email** - email.
->
->Token comes in response.
+#### Create migration:
+`npm run migration:create src/migration/<name>`
 
-- **POST** */auth/login*
+#### Generate migration:
+`npm run migration:generate src/migration/<name>`
 
->Log in by sending:
->
->**username** | **email** - registered username or email.
->
->**password** - password.
->
->Token comes in response
+#### Perform all migrations:
+`npm run migration:run`
 
-- **GET** */storage*
-
->Returns an array with the ID, file name, and the name of the user who uploaded it.
-
-### Access after authorization by JWT token:
-
-- **POST** */storage/upload*
-
-
->Send files by transmitting a 32-byte key in the body (aes-256-ctr).
->
->The response comes with an array of identifiers.
-
-- **GET** */storage/download/id/**{id}**/key/**{key}***
-
-
->Upload the file by passing the parameters:
->
->**id** - id of the uploaded file.
->
->**key** - key (32 bytes) used during file sending.
-
-- **DELETE** */storage/delete/**{id}***
-
-
->Deleting the file by passing the parameter:
->**id** - id of the uploaded file.
+#### Go back one migration ago:
+`npm run migration:revert`
