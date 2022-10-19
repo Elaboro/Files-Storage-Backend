@@ -12,8 +12,8 @@ export class StorageRemote implements IStorage {
 
   private url_domain: string = cfg.CDN_URL;
 
-  async getFileStream(file_name: string): Promise<Readable> {
-    const url: URL = new URL(file_name, this.url_domain);
+  async getFileStream(filename: string): Promise<Readable> {
+    const url: URL = new URL(filename, this.url_domain);
 
     const body: Readable = await fetch(url.href)
       .then((res: Response) => {
@@ -28,11 +28,11 @@ export class StorageRemote implements IStorage {
     return body;
   }
 
-  async save(file_name: string, data) {
-    return this.ftpService.save(file_name, data);
+  async save(filename: string, data) {
+    return this.ftpService.save(filename, data);
   }
 
-  async delete(file_name: string) {
-    return this.ftpService.delete(file_name);
+  async delete(filename: string) {
+    return this.ftpService.delete(filename);
   }
 }

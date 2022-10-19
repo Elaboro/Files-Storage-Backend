@@ -11,19 +11,19 @@ export class StorageLocal implements IStorage {
     private readonly fileSystemService: FileSystemService,
   ) {}
 
-  async getFileStream(file_name: string): Promise<Readable> {
-    return this.fileSystemService.get(this.UPLOADED_FILES_PATH, file_name);
+  async getFileStream(filename: string): Promise<Readable> {
+    return this.fileSystemService.get(this.UPLOADED_FILES_PATH, filename);
   }
 
-  async save(file_name: string, data): Promise<void> {
+  async save(filename: string, data): Promise<void> {
     return this.fileSystemService.save(
       this.UPLOADED_FILES_PATH,
-      file_name,
+      filename,
       data,
     );
   }
 
-  async delete(file_name: string): Promise<void> {
-    return this.fileSystemService.delete(this.UPLOADED_FILES_PATH, file_name);
+  async delete(filename: string): Promise<void> {
+    return this.fileSystemService.delete(this.UPLOADED_FILES_PATH, filename);
   }
 }

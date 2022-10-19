@@ -69,7 +69,7 @@ export class StorageService {
     try {
       const storage: Storage = await this.storageRepo.getFileById(id);
       if (!storage) throw new Error("File not found");
-      const { iv, file_name, uuid }: Storage = storage;
+      const { iv, filename, uuid }: Storage = storage;
 
       const crypt_info: CryptInfo = { key, iv };
 
@@ -78,7 +78,7 @@ export class StorageService {
       const unpackStream: Gunzip = this.packService.createUnpackStream();
 
       return {
-        name: file_name,
+        name: filename,
         stream: fileStream.pipe(decryptStream).pipe(unpackStream),
       };
 

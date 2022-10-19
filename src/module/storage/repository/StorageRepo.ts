@@ -26,7 +26,7 @@ export class StorageRepo {
     const storage: Storage = this.storageRepo.create();
 
     storage.iv = iv;
-    storage.file_name = originalname;
+    storage.filename = originalname;
     storage.user = user;
 
     return storage.save();
@@ -36,7 +36,7 @@ export class StorageRepo {
     const storage: Storage = await this.getFileById(id);
 
     storage.iv = file_data.iv;
-    storage.file_name = file_data.originalname;
+    storage.filename = file_data.originalname;
     storage.user = file_data.user;
 
     return storage.save();
@@ -56,7 +56,7 @@ export class StorageRepo {
       .leftJoinAndSelect('storages.user', 'user')
       .select([
         'storages.id AS id',
-        'storages.file_name AS file_name',
+        'storages.filename AS filename',
         'user.username AS username',
       ])
       .orderBy('user.id', 'ASC')

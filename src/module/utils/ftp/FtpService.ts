@@ -26,10 +26,10 @@ export class FtpService {
   }
 
   async save(
-    file_name: string,
+    filename: string,
     data: NodeJS.ReadableStream | Buffer | string
   ): Promise<void> {
-    const remote_path: string = this.remote_path_root + file_name;
+    const remote_path: string = this.remote_path_root + filename;
 
     const client: Client = new Client();
     client.on('ready', () => {
@@ -43,8 +43,8 @@ export class FtpService {
     client.connect(this.config.options);
   }
 
-  async delete(file_name: string): Promise<void> {
-    const remote_path: string = this.remote_path_root + file_name;
+  async delete(filename: string): Promise<void> {
+    const remote_path: string = this.remote_path_root + filename;
 
     const client: Client = new Client();
     client.on('ready', () => {

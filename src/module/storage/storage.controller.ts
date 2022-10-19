@@ -84,8 +84,8 @@ export class StorageController {
   @Delete('delete/:id')
   async delete(@Param() dto: DeleteFileDto) {
     try {
-      const { file_name, id }: Storage = await this.storageService.delete(dto);
-      return { file_name, id };
+      const { filename, id }: Storage = await this.storageService.delete(dto);
+      return { filename, id };
     } catch (e) {
       throw new HttpException(
         'Error deleting a file.',

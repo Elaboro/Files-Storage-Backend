@@ -25,13 +25,13 @@ export class StorageManager implements IStorage{
     if(method === "remote") this.storage_method = new StorageRemote(this.ftpService);
   }
 
-  async save(file_name: string, data: string | NodeJS.ReadableStream | Buffer): Promise<any> {
-    this.storage_method.save(file_name, data);
+  async save(filename: string, data: string | NodeJS.ReadableStream | Buffer): Promise<any> {
+    this.storage_method.save(filename, data);
   }
-  async getFileStream(file_name: string): Promise<Readable> {
-    return this.storage_method.getFileStream(file_name);
+  async getFileStream(filename: string): Promise<Readable> {
+    return this.storage_method.getFileStream(filename);
   }
-  async delete(file_name: string): Promise<any> {
-    this.storage_method.delete(file_name);
+  async delete(filename: string): Promise<any> {
+    this.storage_method.delete(filename);
   }
 }

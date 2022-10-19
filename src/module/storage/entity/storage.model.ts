@@ -22,7 +22,7 @@ export class Storage extends BaseEntity {
   iv: Buffer;
 
   @Column({ type: 'text', nullable: true })
-  file_name: string;
+  filename: string;
 
   @ManyToOne(() => User, (user) => user.files)
   @JoinColumn({ name: 'user_id' })
