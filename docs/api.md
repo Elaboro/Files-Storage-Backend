@@ -1,4 +1,4 @@
-**<<< [Main page](https://github.com/Elaboro/Files-Storage-Backend)**
+**<<< [Main page](https://github.com/Elaboro/Files-Storage-Backend#files-storage-backend)**
 
 # API documentation 
 http://localhost:3000/api/docs/

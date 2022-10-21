@@ -7,9 +7,12 @@ The simplest authorization and registration is implemented (JWT). After authoriz
 You can also delete the file by passing its ID. Meta information about the file will be deleted along with it.
 
 ## Main technology stack
-**Node.js**, **TypeScript**, **Nest.js**, **TypeORM**, **PostgreSQL**, **Swagger**
+**Node.js**, **TypeScript**, **Nest.js**, **TypeORM** and migrations, **PostgreSQL**, **Swagger**, **Docker**
 
 ## Launch application
+**[Alternative launch in docker](https://github.com/Elaboro/Files-Storage-Backend/blob/master/docs/docker.md)**
+
+- prepare postgres database
 - create and configure `.dev.env` by analogy with `.env.sample`
 - `npm i`
 - `npm run migration:run` - use with superuser, because migration creates an extension "uuid-ossp"
@@ -21,16 +24,4 @@ You can also delete the file by passing its ID. Meta information about the file 
 **[SEE MORE](https://github.com/Elaboro/Files-Storage-Backend/blob/master/docs/api.md)** or http://localhost:3000/api/docs/
 
 ## Migrations
-> **Example:** `npm run migration:create src/migration/NameMigration`
-
-#### Create migration:
-`npm run migration:create src/migration/<name>`
-
-#### Generate migration:
-`npm run migration:generate src/migration/<name>`
-
-#### Perform all migrations:
-`npm run migration:run`
-
-#### Go back one migration ago:
-`npm run migration:revert`
+**[SEE MORE](https://github.com/Elaboro/Files-Storage-Backend/blob/master/docs/migrations.md)**

@@ -1,17 +1,17 @@
-version: "3.0"
+version: "3.8"
 
 services:
-  main:
-    container_name: main
+  storage:
+    container_name: storage
     build:
       context: .
     env_file:
-      - .dev.env
+      - ./.dev.env
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./src:/usr/app/storage_node/src
+      - ./storage:/usr/app/storage_node/storage
     ports:
-      - 80:3000
+      - 3000:3000
       - 9229:9229
     command: npm run start:dev
     restart: always
@@ -19,21 +19,22 @@ services:
       - postgres
   postgres:
     container_name: postgres
-    image: postgres:12
-    env_file:
-      - .dev.env
+    image: postgres:12-alpine
     environment:
       PG_DATA: /var/lib/postgresql/data
+      POSTGRES_USER: "${POSTGRES_USERNAME}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DATABASE}"
     ports:
-      - 5432:5432
+      - 5434:5432
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
     restart: always
     networks:
       - postgres
   pgadmin:
     container_name: pgadmin
-    image: dpage/pgadmin4:5.7
+    image: dpage/pgadmin4:6.14
     environment:
       PGADMIN_DEFAULT_EMAIL: "${COMPOSE_PGADMIN_DEFAULT_EMAIL}"
       PGADMIN_DEFAULT_PASSWORD: "${COMPOSE_PGADMIN_DEFAULT_PASSWORD}"
@@ -57,3 +58,4 @@ networks:
 
 volumes:
   pgdata:
+  pgadmin:

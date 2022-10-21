@@ -1,13 +1,11 @@
-FROM node:14.18.1
+FROM node:14.20.1-alpine
 
-WORKDIR /app
+RUN mkdir -p /usr/app/storage_node
 
-COPY package*.json ./
+WORKDIR /usr/app/storage_node
+
+COPY package*.json .
+
+COPY tsconfig.json .
 
 RUN npm install
-
-COPY . .
-
-COPY ./dist ./dist
-
-CMD ["npm", "run", "start:dev"]
