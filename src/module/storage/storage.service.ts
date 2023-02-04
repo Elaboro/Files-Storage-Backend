@@ -46,9 +46,14 @@ export class StorageService {
         const fileStream: Readable = Readable.from(file.buffer);
         const packStream: Gzip = this.packService.createPackStream();
         const { cipherStream, iv }: IEncrypt = this.cryptoService.createEncryptByKey(key);
-        
+
         const stream: Duplex = fileStream.pipe(packStream).pipe(cipherStream);
         this.storageManager.save(storage.uuid, stream);
+
+        // fix https://github.com/expressjs/multer/pull/1102
+        if (!/[^\u0000-\u00ff]/.test(file.originalname)) {
+          file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8')
+        }
 
         this.storageRepo.changeFileById(storage.id, {
           iv,
