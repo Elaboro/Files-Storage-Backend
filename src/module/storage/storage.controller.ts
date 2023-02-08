@@ -66,11 +66,11 @@ export class StorageController {
   async download(@Param() dto: DownloadFileDto, @Response() res: Res) {
     const file: IStorageFile = await this.storageService.choose(dto);
 
+    const filename = encodeURIComponent(file.name);
     res.set({
       'Content-Type': 'application/force-download',
-      'Content-Disposition': `attachment; filename="${encodeURIComponent(
-        file.name,
-      )}"`,
+      'Access-Control-Expose-Headers': 'Content-Disposition',
+      'Content-Disposition': `attachment; filename="${filename}"`,
     });
 
     file.stream.pipe(res);
