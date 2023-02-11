@@ -55,10 +55,11 @@ export class StorageService {
           file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8')
         }
 
-        this.storageRepo.changeFileById(storage.id, {
+        await this.storageRepo.changeFileById(storage.id, {
           iv,
           originalname: file.originalname,
         });
+        await storage.reload();
 
         return storage;
       } catch (e) {

@@ -54,7 +54,11 @@ export class StorageController {
   ) {
     const user: User = request.user;
     const file_uploaded_list: Storage[] = await this.storageService.save(dto, files, user);
-    return file_uploaded_list.map(v => v.id);
+    return file_uploaded_list.map((v: Storage) => ({
+      id: v.id,
+      filename: v.filename,
+      username: v.user.username,
+    }));
   }
 
   @ApiOperation({

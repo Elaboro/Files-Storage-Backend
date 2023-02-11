@@ -59,7 +59,7 @@ export class StorageRepo {
         'storages.filename AS filename',
         'user.username AS username',
       ])
-      .orderBy('user.id', 'ASC')
+      .orderBy('storages.id', 'ASC')
       .getRawMany<Storage>();
   }
 }
